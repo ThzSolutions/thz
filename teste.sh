@@ -338,7 +338,7 @@ sleep 1
 	systemctl unmask samba-ad-dc.service &>> $LOG
 	systemctl enable samba-ad-dc.service &>> $LOG
 	systemctl start samba-ad-dc.service &>> $LOG
-	net rpc rights grant 'THZ\Domain Admins' SeDiskOperatorPrivilege -U $USUARIO%$SENHA &>> $LOG
+	net rpc rights grant '$NETBIOS\Domain Admins' SeDiskOperatorPrivilege -U $USUARIO%$SENHA &>> $LOG
 	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
