@@ -4,9 +4,7 @@
 # Versão: 0.01
 # Ubuntu Server 18.04.x LTS x64
 # Kernel Linux 4.15.x
-# SAMBA-4.7.x ( WHOIS-TCP:43 / DNS-TCP,UDP:53 / WINS-TCP,UDP:42 ) 
-# KERBEROS () 
-# NTP (UDP:123)
+# SAMBA-4.7.x
 
 #variáveis do script
 HORAINICIAL=`date +%T`
