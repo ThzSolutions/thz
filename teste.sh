@@ -25,7 +25,7 @@ LEVEL="2008_R2"
 INTERFACE="enp0s3"
 ENCAMINHAMENTO="8.8.8.8"
 USUARIO="Supremo"
-SENHA="P@ssw0rd"
+SENHA="ASD!@#456"
 NTP="a.st1.ntp.br"
 IP="172.20.0.10"
 MASCARA="/16"
@@ -319,7 +319,7 @@ sleep 1
 	echo "    version: 2" >> /etc/netplan/50-cloud-init.yaml
 	#
 	netplan --debug apply &>> $LOG
-	echo -e "Interface de Rede .................................[ OK ]"
+	echo -e "Interface de Rede ................................[ OK ]"
 sleep 1
 #
 #Promovendo Controlador de Domínio do Active Directory:
@@ -342,7 +342,7 @@ sleep 1
 	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
-	echo -e "Controlador de Domínio do Active Directory .........[ OK ]"
+	echo -e "Controlador de Domínio do Active Directory .......[ OK ]"
 sleep 1
 read
 exit 1
