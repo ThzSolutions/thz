@@ -40,30 +40,30 @@ export DEBIAN_FRONTEND="noninteractive"
 #Verificar permissões de usuário:
 if [ "$USER" == "0" ]
 	then
-		echo -e "Permissão compatível .............................[ OK ]"
+		echo -e "Permissão compatível ...................................[ OK ]"
 		sleep 1
 	else
-		echo -e "O script deve ser executado como root ............[ ER ]"
+		echo -e "O script deve ser executado como root ..................[ ER ]"
 		exit 1
 fi
 #
 #Verificar versão da distribuição:
 if [ "$UBUNTU" == "18.04" ]
 	then
-		echo -e "Versão da distribuição compatível ................[ OK ]"
+		echo -e "Versão da distribuição compatível ......................[ OK ]"
 		sleep 1
 	else
-		echo -e "A distribuição deve ser 18.04 ....................[ ER ]"
+		echo -e "A distribuição deve ser 18.04 ..........................[ ER ]"
 		exit 1
 fi
 #
 #Verificar versão do kernel:
 if [ "$KERNEL" == "4.15" ]
 	then
-		echo -e "O Kernel compatível ..............................[ OK ]"
+		echo -e "O Kernel compatível ....................................[ OK ]"
 		sleep 1
 	else
-		echo -e "O Kernel deve ser 4.15 ou superior ...............[ ER ]"
+		echo -e "O Kernel deve ser 4.15 ou superior .....................[ ER ]"
 		exit 1
 fi
 #
@@ -71,10 +71,10 @@ fi
 ping -q -c5 google.com > /dev/null
 if [ $? -eq 0 ]
 	then
-		echo -e "Internet .........................................[ OK ]"
+		echo -e "Internet ...............................................[ OK ]"
 		sleep 1
 	else
-		echo -e "Sem conexão com a internet .......................[ ER ]"
+		echo -e "Sem conexão com a internet .............................[ ER ]"
 		sleep 1
 fi
 #
@@ -83,34 +83,34 @@ fi
 #
 #Adicionar o Repositório Universal:	
 	add-apt-repository universe &>> $LOG
-	echo -e "Repositório universal ............................[ OK ]"
+	echo -e "Repositório universal ..................................[ OK ]"
 sleep 1
 #
 #Adicionar o Repositório Multiversão:	
 	add-apt-repository multiverse &>> $LOG
-	echo -e "Repositório multiversão ..........................[ OK ]"
+	echo -e "Repositório multiversão ................................[ OK ]"
 sleep 1
 #
 #Atualizar lista de repositórios:	
 	apt update &>> $LOG
-	echo -e "Lista de repositórios ............................[ OK ]"
+	echo -e "Lista de repositórios ..................................[ OK ]"
 sleep 1
 #
 #Atualizar sistema:	
 	apt -y upgrade &>> $LOG
-	echo -e "Atualização do sistema ...........................[ OK ]"
+	echo -e "Atualização do sistema .................................[ OK ]"
 sleep 1
 #
 #Remover pacotes desnecessários:	
 	apt -y autoremove &>> $LOG
-	echo -e "Remoção de pacodes desnecessários ................[ OK ]"
+	echo -e "Remoção de pacodes desnecessários ......................[ OK ]"
 sleep 1
 #
 #Instalar dependencias:	
 	apt -y install ntp ntpdate build-essential libacl1-dev libattr1-dev libblkid-dev libgnutls28-dev libreadline-dev \
 	python-dev libpam0g-dev python-dnspython gdb pkg-config libpopt-dev libldap2-dev dnsutils libbsd-dev docbook-xsl acl \
 	attr debconf-utils figlet cifs-utils traceroute &>> $LOG
-	echo -e "Dependências .....................................[ OK ]"
+	echo -e "Dependências ...........................................[ OK ]"
 sleep 1
 #
 #Instalar e configurar KERBEROS:
@@ -160,20 +160,20 @@ sleep 1
 	echo "[realms]" >> /etc/krb5.conf &>> $LOG
 	echo "	$REINO = {" >> /etc/krb5.conf
 	echo "		# Servidor de geração de KDC" >> /etc/krb5.conf
-	echo "		kdc = addc-001.thz.intra" >> /etc/krb5.conf &>> $LOG
+	echo "		kdc = $FQDN" >> /etc/krb5.conf &>> $LOG
 	echo "		#" >> /etc/krb5.conf
 	echo "		# Servidor de Administração do KDC" >> /etc/krb5.conf
-	echo "		admin_server = addc-001.thz.intra" >> /etc/krb5.conf &>> $LOG
+	echo "		admin_server = $FQDN" >> /etc/krb5.conf &>> $LOG
 	echo "		#" >> /etc/krb5.conf
 	echo "		# Domínio padrão" >> /etc/krb5.conf
-	echo "		default_domain = thz.intra" >> /etc/krb5.conf &>> $LOG
+	echo "		default_domain = $DOMINIO" >> /etc/krb5.conf &>> $LOG
 	echo "	}" >> /etc/krb5.conf
 	echo " " >> /etc/krb5.conf
 	#
 	echo "# Domínio Realm" >> /etc/krb5.conf
 	echo "[domain_realm]" >> /etc/krb5.conf &>> $LOG
-	echo "	.thz.intra = THZ.INTRA" >> /etc/krb5.conf &>> $LOG
-	echo "	thz.intra = THZ.INTRA" >> /etc/krb5.conf &>> $LOG
+	echo "	.$DOMINIO = $REINO" >> /etc/krb5.conf &>> $LOG
+	echo "	$DOMINIO = $REINO" >> /etc/krb5.conf &>> $LOG
 	echo " " >> /etc/krb5.conf
 	#
 	echo "# Geração do Tickets" >> /etc/krb5.conf
@@ -187,7 +187,7 @@ sleep 1
 	echo "  default = FILE:/var/log/krb5libs.log " >> /etc/krb5.conf &>> $LOG
 	echo "  kdc = FILE:/var/krb5/krb5kdc.log " >> /etc/krb5.conf &>> $LOG
 	echo "  admin_server = FILE:/var/log/krb5admin.log" >> /etc/krb5.conf &>> $LOG
-	echo -e "Kerberos .........................................[ OK ]"
+	echo -e "Kerberos ...............................................[ OK ]"
 sleep 1
 #
 #Configurar NTP:
@@ -231,22 +231,22 @@ sleep 1
 	systemctl start ntp.service &>> $LOG
 	ntpq -pn &>> $LOG
 	hwclock --systohc &>> $LOG
-	echo -e "Data/Hora de hardware: `hwclock`\n"
-	echo -e "Data/Hora de software: `date`\n"
-	echo -e "NTP ..............................................[ OK ]"
+	echo "Data/Hora de hardware: `hwclock`\n"
+	echo "Data/Hora de software: `date`\n"
+	echo -e "NTP ....................................................[ OK ]"
 sleep 1
 #
 #Configurar sistema de arquivos (FSTAB):
 	#cp -v /etc/fstab /etc/fstab.bkp &>> $LOG
 	#nano /etc/fstab ########## 
 	mount -o remount,rw /dev/sda2 &>> $LOG
-	echo -e "Sistema de aquivos ...............................[ OK ]"
+	echo -e "Sistema de aquivos .....................................[ OK ]"
 sleep 1
 #
 #Auterar nome do servidor (HOSTNAME):
 	cp -v /etc/hostname /etc/hostname.bkp &>> $LOG
 	echo "$NOME" > /etc/hostname &>> $LOG
-	echo -e "Nome do servidor (hostname) ......................[ OK ]"
+	echo -e "Nome do servidor (hostname) ............................[ OK ]"
 sleep 1
 #
 #Configurar resolução de nomes local (HOSTS):
@@ -266,7 +266,7 @@ sleep 1
 	echo "ff02::2		ip6-allrouters" >> /etc/hostname &>> $LOG
 	echo "ff02::3		ip6-allhosts" >> /etc/hostname &>> $LOG
 	#
-	echo -e "Resolução local de nomes (hosts) .................[ OK ]"
+	echo -e "Resolução local de nomes (hosts) .......................[ OK ]"
 sleep 1
 #
 #Configurar ponte NS (NSSWITCH):
@@ -293,13 +293,13 @@ sleep 1
 	echo "rpc:            db files" >> /etc/nsswitch.conf &>> $LOG
 	echo "netgroup:       nis" >> /etc/nsswitch.conf &>> $LOG
 	#
-	echo -e "Ponte NS .........................................[ OK ]"
+	echo -e "Ponte NS ...............................................[ OK ]"
 sleep 1
 #
 #Instalar SAMBA4:
 	apt -y install samba samba-common smbclient cifs-utils samba-vfs-modules samba-testsuite samba-dsdb-modules \
 	winbind ldb-tools libnss-winbind libpam-winbind unzip kcc tree &>> $LOG
-	echo -e "Samba4 ...........................................[ OK ]"
+	echo -e "Samba4 .................................................[ OK ]"
 sleep 1
 #
 #Configurar interfaces de rede:
@@ -319,7 +319,7 @@ sleep 1
 	echo "    version: 2" >> /etc/netplan/50-cloud-init.yaml
 	#
 	netplan --debug apply &>> $LOG
-	echo -e "Interface de Rede ................................[ OK ]"
+	echo -e "Interface de Rede ......................................[ OK ]"
 sleep 1
 #
 #Promovendo Controlador de Domínio do Active Directory:
@@ -342,7 +342,7 @@ sleep 1
 	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
-	echo -e "Controlador de Domínio do Active Directory .......[ OK ]"
+	echo -e "Controlador de Domínio do Active Directory .............[ OK ]"
 sleep 1
 read
 exit 1
