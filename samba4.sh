@@ -353,4 +353,5 @@ TEMPO=`date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S"`
 #
 echo -e "Tempo de execução $0: $TEMPO"
 echo -e "Fim do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
+read
 exit 1
