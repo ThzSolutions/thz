@@ -35,7 +35,7 @@ ARPAIP="10.0"
 #
 # Exportando o recurso de Noninteractive:
 export DEBIAN_FRONTEND="noninteractive"
-clear
+#clear
 #
 #Verificar permissões de usuário:
 if [ "$USER" == "0" ]
