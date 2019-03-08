@@ -24,7 +24,7 @@ REGRA="dc"
 LEVEL="2008_R2"
 INTERFACE="enp0s3"
 ENCAMINHAMENTO="8.8.8.8"
-USUARIO="Supremo"
+USUARIO="Administrator"
 SENHA="ASD!@#456"
 NTP="a.st1.ntp.br"
 IP="172.20.0.10"
@@ -304,13 +304,14 @@ sleep 1
 sleep 1
 #
 #Configurar interfaces de rede:
+	sleep 3
 	mv /etc/netplan/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml.bkp
 	#
 	# Construindo aquivo de configuração do NETPLAN:
 	echo "network:" >> /etc/netplan/50-cloud-init.yaml
 	echo "    ethernets:" >> /etc/netplan/50-cloud-init.yaml
 	echo "        $INTERFACE:" >> /etc/netplan/50-cloud-init.yaml
-	echo "            dhcp: false" >> /etc/netplan/50-cloud-init.yaml
+	echo "            dhcp4: false" >> /etc/netplan/50-cloud-init.yaml
 	echo "            addresses: [$IP$MASCARA]" >> /etc/netplan/50-cloud-init.yaml
 	echo "            gateway4: $GATEWAY" >> /etc/netplan/50-cloud-init.yaml
 	echo "            nameservers:" >> /etc/netplan/50-cloud-init.yaml
