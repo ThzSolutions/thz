@@ -345,15 +345,15 @@ sleep 1
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
 	echo -e "Controlador de Domínio do Active Directory .............[\033[0;32m OK \033[0m]"
 sleep 1
+
+HORAFINAL=$(date +%T)
+HORAINICIAL01=$(date -u -d "$HORAINICIAL" +"%s")
+HORAFINAL01=$(date -u -d "$HORAFINAL" +"%s")
+TEMPO=$(date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S")
+	echo -e "Tempo de execução $0: $TEMPO"
+	echo -e "Fim do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
+	echo -e "\033[0;31m É nescesario reiniciar o servidor !!! \033[0m"
+	echo -e "Pressione \033[0;32m <Enter> \033[0m para finalizar o processo."
 read
 exit 1
 
-#
-#Variáveis do script 2	
-#HORAFINAL=`date +%T`
-#HORAINICIAL01=$(date -u -d "$HORAINICIAL" +"%s")
-#HORAFINAL01=$(date -u -d "$HORAFINAL" +"%s")
-#TEMPO=`date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S"`
-#
-#echo -e "Tempo de execução $0: $TEMPO"
-#echo -e "Fim do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
