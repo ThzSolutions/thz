@@ -1,7 +1,7 @@
 #!/bin/bash
 # Autor: Levi Barroso Menezes
 # Data de criação: 08/03/2019
-# Versão: 0.02
+# Versão: 0.01
 # Ubuntu Server 18.04.x LTS x64
 # Kernel Linux 4.15.x
 # SAMBA-4.7.x
@@ -40,30 +40,30 @@ export DEBIAN_FRONTEND="noninteractive"
 #Verificar permissões de usuário:
 if [ "$USER" == "0" ]
 	then
-		echo -e "Permissão compatível ...................................[ OK ]"
+		echo -e "Permissão compatível ...................................[\033[0;32m OK \033[0m]"
 		sleep 1
 	else
-		echo -e "O script deve ser executado como root ..................[ ER ]"
+		echo -e "O script deve ser executado como root ..................[\033[0;31m ER \033[0m]"
 		exit 1
 fi
 #
 #Verificar versão da distribuição:
 if [ "$UBUNTU" == "18.04" ]
 	then
-		echo -e "Versão da distribuição compatível ......................[ OK ]"
+		echo -e "Versão da distribuição compatível ......................[\033[0;32m OK \033[0m]"
 		sleep 1
 	else
-		echo -e "A distribuição deve ser 18.04 ..........................[ ER ]"
+		echo -e "A distribuição deve ser 18.04 ..........................[\033[0;31m ER \033[0m]"
 		exit 1
 fi
 #
 #Verificar versão do kernel:
 if [ "$KERNEL" == "4.15" ]
 	then
-		echo -e "O Kernel compatível ....................................[ OK ]"
+		echo -e "O Kernel compatível ....................................[\033[0;32m OK \033[0m]"
 		sleep 1
 	else
-		echo -e "O Kernel deve ser 4.15 ou superior .....................[ ER ]"
+		echo -e "O Kernel deve ser 4.15 ou superior .....................[\033[0;31m ER \033[0m]"
 		exit 1
 fi
 #
@@ -71,10 +71,10 @@ fi
 ping -q -c5 google.com > /dev/null
 if [ $? -eq 0 ]
 	then
-		echo -e "Internet ...............................................[ OK ]"
+		echo -e "Internet ...............................................[\033[0;32m OK \033[0m]"
 		sleep 1
 	else
-		echo -e "Sem conexão com a internet .............................[ ER ]"
+		echo -e "Sem conexão com a internet .............................[\033[0;31m ER \033[0m]"
 		sleep 1
 fi
 #
@@ -83,34 +83,34 @@ fi
 #
 #Adicionar o Repositório Universal:	
 	add-apt-repository universe &>> $LOG
-	echo -e "Repositório universal ..................................[ OK ]"
+	echo -e "Repositório universal ..................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Adicionar o Repositório Multiversão:	
 	add-apt-repository multiverse &>> $LOG
-	echo -e "Repositório multiversão ................................[ OK ]"
+	echo -e "Repositório multiversão ................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Atualizar lista de repositórios:	
 	apt update &>> $LOG
-	echo -e "Lista de repositórios ..................................[ OK ]"
+	echo -e "Lista de repositórios ..................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Atualizar sistema:	
 	apt -y upgrade &>> $LOG
-	echo -e "Atualização do sistema .................................[ OK ]"
+	echo -e "Atualização do sistema .................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Remover pacotes desnecessários:	
 	apt -y autoremove &>> $LOG
-	echo -e "Remoção de pacodes desnecessários ......................[ OK ]"
+	echo -e "Remoção de pacodes desnecessários ......................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar dependencias:	
 	apt -y install ntp ntpdate build-essential libacl1-dev libattr1-dev libblkid-dev libgnutls28-dev libreadline-dev \
 	python-dev libpam0g-dev python-dnspython gdb pkg-config libpopt-dev libldap2-dev dnsutils libbsd-dev docbook-xsl acl \
 	attr debconf-utils figlet cifs-utils traceroute &>> $LOG
-	echo -e "Dependências ...........................................[ OK ]"
+	echo -e "Dependências ...........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar e configurar KERBEROS:
@@ -188,7 +188,7 @@ sleep 1
 	echo "  default = FILE:/var/log/krb5libs.log " >> /etc/krb5.conf
 	echo "  kdc = FILE:/var/krb5/krb5kdc.log " >> /etc/krb5.conf
 	echo "  admin_server = FILE:/var/log/krb5admin.log" >> /etc/krb5.conf
-	echo -e "Kerberos ...............................................[ OK ]"
+	echo -e "Kerberos ...............................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar NTP:
@@ -234,20 +234,20 @@ sleep 1
 	hwclock --systohc &>> $LOG
 	#echo "Data/Hora de hardware: `hwclock`\n"
 	#echo "Data/Hora de software: `date`\n"
-	echo -e "NTP ....................................................[ OK ]"
+	echo -e "NTP ....................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar sistema de arquivos (FSTAB):
 	#cp -v /etc/fstab /etc/fstab.bkp &>> $LOG
 	#nano /etc/fstab ########## 
 	mount -o remount,rw /dev/sda2 &>> $LOG
-	echo -e "Sistema de aquivos (fstab) .............................[ OK ]"
+	echo -e "Sistema de aquivos (fstab) .............................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Auterar nome do servidor (HOSTNAME):
 	cp -v /etc/hostname /etc/hostname.bkp &>> $LOG
 	echo "$NOME" > /etc/hostname &>> $LOG
-	echo -e "Nome do servidor (hostname) ............................[ OK ]"
+	echo -e "Nome do servidor (hostname) ............................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar resolução de nomes local (HOSTS):
@@ -267,7 +267,7 @@ sleep 1
 	echo "ff02::2		ip6-allrouters" >> /etc/hosts
 	echo "ff02::3		ip6-allhosts" >> /etc/hosts
 	#
-	echo -e "Resolução local de nomes (hosts) .......................[ OK ]"
+	echo -e "Resolução local de nomes (hosts) .......................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar ponte NS (NSSWITCH):
@@ -294,13 +294,13 @@ sleep 1
 	echo "rpc:            db files" >> /etc/nsswitch.conf
 	echo "netgroup:       nis" >> /etc/nsswitch.conf
 	#
-	echo -e "Ponte NS (nsswitch) ....................................[ OK ]"
+	echo -e "Ponte NS (nsswitch) ....................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar SAMBA4:
 	apt -y install samba samba-common smbclient cifs-utils samba-vfs-modules samba-testsuite samba-dsdb-modules \
 	winbind ldb-tools libnss-winbind libpam-winbind unzip kcc tree &>> $LOG
-	echo -e "Samba4 .................................................[ OK ]"
+	echo -e "Samba4 .................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar interfaces de rede:
@@ -320,7 +320,7 @@ sleep 1
 	echo "    version: 2" >> /etc/netplan/50-cloud-init.yaml
 	#
 	netplan --debug apply &>> $LOG
-	echo -e "Interface de Rede ......................................[ OK ]"
+	echo -e "Interface de Rede ......................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Promovendo Controlador de Domínio do Active Directory:
@@ -343,7 +343,7 @@ sleep 1
 	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
-	echo -e "Controlador de Domínio do Active Directory .............[ OK ]"
+	echo -e "Controlador de Domínio do Active Directory .............[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Variáveis do script 2	
@@ -352,8 +352,8 @@ HORAINICIAL01=$(date -u -d "$HORAINICIAL" +"%s")
 HORAFINAL01=$(date -u -d "$HORAFINAL" +"%s")
 TEMPO=$(date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S")
 echo -e "Tempo de execução do script $0: $TEMPO"
-echo -e "É nescesario reiniciar o servidor !!!"
-echo -e "Pressione <Enter> para concluir o processo."
+echo -e "\033[0;31mÉ nescesario reiniciar o servidor !!!\033[0m"
+echo -e "Pressione \033[0;32m<Enter>\033[0m para concluir o processo."
 echo -e "Fim do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 read
 exit 1
