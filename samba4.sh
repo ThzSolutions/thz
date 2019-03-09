@@ -232,8 +232,8 @@ sleep 1
 	systemctl start ntp.service &>> $LOG
 	ntpq -pn &>> $LOG
 	hwclock --systohc &>> $LOG
-	#echo "Data/Hora de hardware: `hwclock`\n"
-	#echo "Data/Hora de software: `date`\n"
+	echo "Data/Hora de hardware: `hwclock`\n"
+	echo "Data/Hora de software: `date`\n"
 	echo -e "NTP ....................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
@@ -241,7 +241,7 @@ sleep 1
 	#cp -v /etc/fstab /etc/fstab.bkp &>> $LOG
 	#nano /etc/fstab ########## 
 	mount -o remount,rw /dev/sda2 &>> $LOG
-	echo -e "Sistema de aquivos (fstab) .............................[\033[0;32m OK \033[0m]"
+	echo -e "Sistema de aquivos .....................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Auterar nome do servidor (HOSTNAME):
@@ -344,16 +344,8 @@ sleep 1
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
 	echo -e "Controlador de Domínio do Active Directory .............[\033[0;32m OK \033[0m]"
+	echo -e "\033[0;31m É nescesario reiniciar o servidor !!! \033[0m"
+	echo -e "Pressione \033[0;32m <Enter> \033[0m para concluir o processo."
 sleep 1
-#
-#Variáveis do script 2	
-HORAFINAL=$(date +%T)
-HORAINICIAL01=$(date -u -d "$HORAINICIAL" +"%s")
-HORAFINAL01=$(date -u -d "$HORAFINAL" +"%s")
-TEMPO=$(date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S")
-echo -e "Tempo de execução do script $0: $TEMPO"
-echo -e "\033[0;31mÉ nescesario reiniciar o servidor !!!\033[0m"
-echo -e "Pressione \033[0;32m<Enter>\033[0m para concluir o processo."
-echo -e "Fim do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 read
 exit 1
