@@ -6,13 +6,6 @@
 # Kernel Linux 4.15.x
 # SAMBA-4.7.x
 #
-#variáveis do script
-HORAINICIAL=`date +%T`
-USER=`id -u`
-UBUNTU=`lsb_release -rs`
-KERNEL=`uname -r | cut -d'.' -f1,2`
-LOG="/var/log/$(echo $0 | cut -d'/' -f2)"
-#
 #Variável do servidor:
 NOME="addc-001"
 DOMINIO="thz.intra"
@@ -33,9 +26,19 @@ GATEWAY="172.20.0.1"
 ARPA="20.172.in-addr.arpa"
 ARPAIP="10.0"
 #
+#variáveis do script
+HORAINICIAL=`date +%T`
+USER=`id -u`
+UBUNTU=`lsb_release -rs`
+KERNEL=`uname -r | cut -d'.' -f1,2`
+LOG="/var/log/$(echo $0 | cut -d'/' -f2)"
+#
 # Exportando o recurso de Noninteractive:
 export DEBIAN_FRONTEND="noninteractive"
 #clear
+#
+#Registrar inicio dos processos:
+	echo -e "Início do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 #
 #Verificar permissões de usuário:
 if [ "$USER" == "0" ]
@@ -77,9 +80,6 @@ if [ $? -eq 0 ]
 		echo -e "Sem conexão com a internet .............................[\033[0;31m ER \033[0m]"
 		sleep 1
 fi
-#
-#Registrar inicio dos processos:
-	echo -e "Início do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 #
 #Adicionar o Repositório Universal:	
 	add-apt-repository universe &>> $LOG
