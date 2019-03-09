@@ -124,7 +124,7 @@ sleep 1
 	debconf-show krb5-config &>> $LOG
 	apt -y install krb5-user krb5-config &>> $LOG
 	mv -v /etc/krb5.conf /etc/krb5.conf.bkp &>> $LOG
-	sleep 3
+	sleep 1
 	#
 	# Construindo aquivo de configuração do KERBEROS:
 	echo "[libdefaults]" >> /etc/krb5.conf
@@ -304,7 +304,6 @@ sleep 1
 sleep 1
 #
 #Configurar interfaces de rede:
-	sleep 3
 	mv /etc/netplan/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml.bkp
 	#
 	# Construindo aquivo de configuração do NETPLAN:
