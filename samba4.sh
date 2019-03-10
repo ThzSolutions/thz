@@ -232,8 +232,8 @@ sleep 1
 	systemctl start ntp.service &>> $LOG
 	ntpq -pn &>> $LOG
 	hwclock --systohc &>> $LOG
-	echo "Data/Hora de hardware: `hwclock`\n"
-	echo "Data/Hora de software: `date`\n"
+	#echo "Data/Hora de hardware: `hwclock`\n"
+	#echo "Data/Hora de software: `date`\n"
 	echo -e "NTP ....................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
@@ -249,7 +249,7 @@ sleep 1
 	mv -v /etc/hostname /etc/hostname.bkp &>> $LOG
 	#
 	# Construindo aquivo de configuração do HOSTNAME:
-	echo "$NOME" > /etc/hostname
+	echo "$NOME" >> /etc/hostname
 	echo -e "Nome do servidor (hostname) ............................[\033[0;32m OK \033[0m]"
 sleep 1
 #
