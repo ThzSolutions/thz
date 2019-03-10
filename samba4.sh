@@ -187,7 +187,7 @@ sleep 1
 	echo "  default = FILE:/var/log/krb5libs.log " >> /etc/krb5.conf
 	echo "  kdc = FILE:/var/krb5/krb5kdc.log " >> /etc/krb5.conf
 	echo "  admin_server = FILE:/var/log/krb5admin.log" >> /etc/krb5.conf
-	echo -e "Kerberos ...............................................[\033[0;32m OK \033[0m]"[\033[0;32m OK \033[0m]"
+	echo -e "Kerberos ...............................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar NTP:
