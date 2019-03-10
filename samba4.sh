@@ -124,7 +124,6 @@ sleep 1
 	debconf-show krb5-config &>> $LOG
 	apt -y install krb5-user krb5-config &>> $LOG
 	mv -v /etc/krb5.conf /etc/krb5.conf.bkp &>> $LOG
-	sleep 1
 	#
 	# Construindo aquivo de configuração do KERBEROS:
 	echo "[libdefaults]" >> /etc/krb5.conf
