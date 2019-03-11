@@ -148,7 +148,7 @@ sleep 1
 #Criar usuários
 	echo -e "configure add console name=$USUARIO password=$PASSWORD profile=$PROFILE tlsenable=no" | bconsole &>> $LOG
 	echo -e "reload" | bconsole &>> $LOG
-	echo -e "Criar usuários ........................................[\033[0;32m OK \033[0m]"
+	echo -e "Criar usuários .........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar interfaces de rede:
