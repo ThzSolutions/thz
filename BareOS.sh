@@ -113,17 +113,14 @@ sleep 1
 sleep 1
 #
 #Instalar dependencias:	
-	apt -y install mariadb-server ntp traceroute apache2 &>> $LOG
+	apt -y install postgresql ntp traceroute apache2 &>> $LOG
 	echo -e "Dependências ...........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
-#Configurar debconf
-	echo "bareos-database-common bareos-database-common/dbconfig-install boolean true" | debconf-set-selections
-	echo "bareos-database-common bareos-database-common/mysql/app-pass password $PASSWORD" | debconf-set-selections
-	echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
+#Configurar postfix
 	echo "postfix postfix/main_mailer_type string $POSTFIX" | debconf-set-selections
-	debconf-show bareos-database-common &>> $LOG
 	debconf-show postfix &>> $LOG
+	echo -e "Mail ...................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar BareOS server.
@@ -131,24 +128,53 @@ sleep 1
 	echo -e "Instalar BareOS ........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
-#~Configurar a base de dados MariaDB
-	apt -y install bareos-database-mariadb &>> $LOG
-	echo -e "Criar base de dados ....................................[\033[0;32m OK \033[0m]"
+#~Configurar a base de dados Postgres
+	apt -y install bareos-database-postgresql &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/grant_bareos_privileges &>> $LOG
+	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar interface WEB BareOS
 	apt -y install bareos-webui &>> $LOG
-	echo -e "Instalar interface web .................................[\033[0;32m OK \033[0m]"
+	echo -e "Interface web ..........................................[\033[0;32m OK \033[0m]"
+sleep 1
+#
+#Criar usuários
+	#echo -e "configure add console name=$USUARIO password=$PASSWORD profile=$PROFILE tlsenable=no" | bconsole &>> $LOG
+	#echo -e "reload" | bconsole &>> $LOG
+	#
+	#Montando arquivo admin.conf
+	echo 'Console {' > /etc/bareos/bareos-dir.d/console/admin.conf
+	echo '  Name = "$USUARIO"' >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo '  Password = "$PASSWORD"' >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo '  Profile = "$PROFILE"' >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo '}' >> /etc/bareos/bareos-dir.d/console/admin.conf
+	#
+	#Montando arquivo webui-admin.conf
+	echo 'Profile {' > /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Name = webui-admin' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  CommandACL = !.bvfs_clear_cache, !.exit, !.sql, !configure, !create, !delete, !purge, !sqlquery, !umount, !unmount, *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Job ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Schedule ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Catalog ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Pool ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Storage ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Client ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  FileSet ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Where ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '  Plugin Options ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo '}' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo -e "Criar usuários ........................................[\033[0;32m OK \033[0m]"
+sleep 1
+#
+#Iniciar serviços BareOS
 	systemctl start bareos-dir.service &>> $LOG
 	systemctl start bareos-sd.service &>> $LOG
 	systemctl start bareos-fd.service &>> $LOG
 	systemctl restart apache2.service &>> $LOG
-sleep 1
-#
-#Criar usuários
-	echo -e "configure add console name=$USUARIO password=$PASSWORD profile=$PROFILE tlsenable=no" | bconsole &>> $LOG
-	echo -e "reload" | bconsole &>> $LOG
-	echo -e "Criar usuários .........................................[\033[0;32m OK \033[0m]"
+	echo -e "Iniciando serviços .....................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar interfaces de rede:
@@ -227,8 +253,6 @@ sleep 1
 	#echo "Data/Hora de software: `date`\n"
 	echo -e "NTP ....................................................[\033[0;32m OK \033[0m]"
 sleep 1
-# update-rc.d mysql defaults 
-# mysql_secure_installation
 #
 HORAFINAL=$(date +%T)
 HORAINICIAL01=$(date -u -d "$HORAINICIAL" +"%s")
@@ -236,8 +260,7 @@ HORAFINAL01=$(date -u -d "$HORAFINAL" +"%s")
 TEMPO=$(date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S")
 	echo -e "Tempo de execução $0: $TEMPO"
 	echo -e "Fim do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
-	echo -e "\033[0;31m É nescesario reiniciar o servidor !!! \033[0m"
+	echo -e "\033[0;31m Pode ser nescesario reiniciar o servidor !!! \033[0m"
 	echo -e "Pressione \033[0;32m <Enter> \033[0m para finalizar o processo."
 read
 exit 1
-
