@@ -10,7 +10,7 @@
 NOME="bkp-001"
 DOMINIO="thz.intra"
 FQDN="bkp-001.thz.intra"
-RELEASE="xUbuntu_18.04/"
+DISTRO="xUbuntu_18.04/"
 USUARIO="supremo"
 PASSWORD="ASD!@#456"
 PROFILE="webui-admin"
@@ -92,8 +92,8 @@ sleep 1
 sleep 1
 #
 #Adicionar o Repositório BareOS:
-	printf "deb http://download.bareos.org/bareos/release/latest/$RELEASE /\n" > /etc/apt/sources.list.d/bareos.list
-	wget -q $URL/Release.key -O- | apt-key add -
+	printf "deb http://download.bareos.org/bareos/release/latest/$DISTRO /\n" > /etc/apt/sources.list.d/bareos.list
+	wget -q "http://download.bareos.org/bareos/release/latest/$DISTRO/Release.key" -O- | apt-key add - &>> $LOG
 	echo -e "Repositório BareOS .....................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
