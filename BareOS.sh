@@ -92,7 +92,8 @@ sleep 1
 sleep 1
 #
 #Adicionar o Repositório BareOS:
-	echo "deb http://download.bareos.org/bareos/release/latest/$RELEASE /" > /etc/apt/sources.list.d/bareos.list
+	printf "deb http://download.bareos.org/bareos/release/latest/$RELEASE /\n" > /etc/apt/sources.list.d/bareos.list
+	wget -q $URL/Release.key -O- | apt-key add -
 	echo -e "Repositório BareOS .....................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
@@ -103,7 +104,7 @@ sleep 1
 #
 #Atualizar sistema:	
 	apt -y upgrade &>> $LOG
-	echo -e "Atualização do sistema .................................[\033[0;32m OK \033[0m]"
+	echo -e "Atualizar do sistema ...................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Remover pacotes desnecessários:	
@@ -147,7 +148,7 @@ sleep 1
 #Criar usuários
 	echo -e "configure add console name=$USUARIO password=$PASSWORD profile=$PROFILE tlsenable=no" | bconsole &>> $LOG
 	echo -e "reload" | bconsole &>> $LOG
-	echo -e "Criar usuários .................................[\033[0;32m OK \033[0m]"
+	echo -e "Criar usuários ........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Configurar interfaces de rede:
