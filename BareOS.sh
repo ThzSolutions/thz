@@ -146,8 +146,8 @@ sleep 1
 sleep 1
 #
 #Criar usuários
-	#echo -e "configure add console name=$USUARIO password=$PASSWORD profile=$PROFILE tlsenable=no" | bconsole &>> $LOG
-	#echo -e "reload" | bconsole &>> $LOG
+	echo -e "configure add console name=$USUARIO password=$PASSWORD profile=$PROFILE tlsenable=no" | bconsole &>> $LOG
+	echo -e "reload" | bconsole &>> $LOG
 	#
 	#Montando arquivo admin.conf
 	echo "Console {" > /etc/bareos/bareos-dir.d/console/admin.conf
@@ -155,6 +155,7 @@ sleep 1
 	echo "  Password = $PASSWORD" >> /etc/bareos/bareos-dir.d/console/admin.conf
 	echo "  Profile = $PROFILE" >> /etc/bareos/bareos-dir.d/console/admin.conf
 	echo "}" >> /etc/bareos/bareos-dir.d/console/admin.conf
+	sleep 1
 	#
 	#Montando arquivo webui-admin.conf
 	echo "Profile {" > /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
