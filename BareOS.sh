@@ -11,8 +11,8 @@ NOME="bkp-001"
 DOMINIO="thz.intra"
 FQDN="bkp-001.thz.intra"
 DISTRO="xUbuntu_18.04/"
-USUARIO="supremo"
-PASSWORD="ASD!@#456"
+USUARIO="admin"
+PASSWORD="P@ssW0rd"
 PROFILE="webui-admin"
 POSTFIX="No configuration"
 #
@@ -150,26 +150,26 @@ sleep 1
 	#echo -e "reload" | bconsole &>> $LOG
 	#
 	#Montando arquivo admin.conf
-	echo 'Console {' > /etc/bareos/bareos-dir.d/console/admin.conf
-	echo '  Name = "$USUARIO"' >> /etc/bareos/bareos-dir.d/console/admin.conf
-	echo '  Password = "$PASSWORD"' >> /etc/bareos/bareos-dir.d/console/admin.conf
-	echo '  Profile = "$PROFILE"' >> /etc/bareos/bareos-dir.d/console/admin.conf
-	echo '}' >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo "Console {" > /etc/bareos/bareos-dir.d/console/admin.conf
+	echo "  Name = $USUARIO" >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo "  Password = $PASSWORD" >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo "  Profile = $PROFILE" >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo "}" >> /etc/bareos/bareos-dir.d/console/admin.conf
 	#
 	#Montando arquivo webui-admin.conf
-	echo 'Profile {' > -R /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Name = webui-admin' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  CommandACL = !.bvfs_clear_cache, !.exit, !.sql, !configure, !create, !delete, !purge, !sqlquery, !umount, !unmount, *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Job ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Schedule ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Catalog ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Pool ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Storage ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Client ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  FileSet ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Where ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '  Plugin Options ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo '}' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "Profile {" > /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Name = webui-admin" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  CommandACL = !.bvfs_clear_cache, !.exit, !.sql, !configure, !create, !delete, !purge, !sqlquery, !umount, !unmount, *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Job ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Schedule ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Catalog ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Pool ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Storage ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Client ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  FileSet ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Where ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "  Plugin Options ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo "}" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo -e "usuários ...............................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
