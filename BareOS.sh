@@ -113,7 +113,7 @@ sleep 1
 sleep 1
 #
 #Instalar dependencias:	
-	apt -y install postgresql ntp traceroute apache2 &>> $LOG
+	apt -y install postgresql postgresql-common ntp ntpdate traceroute apache2 &>> $LOG
 	echo -e "Dependências ...........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
@@ -123,17 +123,21 @@ sleep 1
 	echo -e "Mail ...................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
-#Instalar BareOS server.
-	apt -y install bareos bareos-tools bareos-bconsole &>> $LOG
-	echo -e "Instalar BareOS ........................................[\033[0;32m OK \033[0m]"
+#~Configurar a base de dados Postgres
+	echo "bareos-database-common bareos-database-common/dbconfig-install boolean true" | debconf-set-selections
+	echo "bareos-database-common bareos-database-common/postgresql/app-pass password $PASSWORD" | debconf-set-selections
+	echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
+	debconf-show bareos-database-common &>> $LOG
+	apt -y install bareos-database-postgresql &>> $LOG
+	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
-#~Configurar a base de dados Postgres
-	apt -y install bareos-database-postgresql &>> $LOG
+#Instalar BareOS server.
+	apt -y install bareos bareos-tools bareos-bconsole bareos-database-postgresql &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/grant_bareos_privileges &>> $LOG
-	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
+	echo -e "Instalar BareOS ........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar interface WEB BareOS
@@ -153,7 +157,7 @@ sleep 1
 	echo '}' >> /etc/bareos/bareos-dir.d/console/admin.conf
 	#
 	#Montando arquivo webui-admin.conf
-	echo 'Profile {' > /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
+	echo 'Profile {' > -R /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo '  Name = webui-admin' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo '  CommandACL = !.bvfs_clear_cache, !.exit, !.sql, !configure, !create, !delete, !purge, !sqlquery, !umount, !unmount, *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo '  Job ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
@@ -166,7 +170,7 @@ sleep 1
 	echo '  Where ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo '  Plugin Options ACL = *all*' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo '}' >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo -e "Criar usuários ........................................[\033[0;32m OK \033[0m]"
+	echo -e "usuários ...............................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Iniciar serviços BareOS
@@ -264,3 +268,4 @@ TEMPO=$(date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S")
 	echo -e "Pressione \033[0;32m <Enter> \033[0m para finalizar o processo."
 read
 exit 1
+
