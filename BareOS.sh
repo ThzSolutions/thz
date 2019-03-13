@@ -111,20 +111,30 @@ sleep 1
 	apt -y autoremove &>> $LOG
 	echo -e "Remoção de pacodes desnecessários ......................[\033[0;32m OK \033[0m]"
 sleep 1
+echo "Aperte \033[0;32m<Enter>\033[0m para instalar dependencias"
+read
 #
 #Instalar dependencias:	
-	apt -y install postgresql postgresql-common ntp ntpdate traceroute apache2 &>> $LOG
-	echo -e "Dependências ...........................................[\033[0;32m OK \033[0m]"
-sleep 1
-#
-#Configurar postfix
 	echo "postfix postfix/main_mailer_type string $POSTFIX" | debconf-set-selections
 	debconf-show postfix &>> $LOG
-	echo -e "Mail ...................................................[\033[0;32m OK \033[0m]"
+	apt -y install postgresql php5 apache2 libapache2-mod-php5 ntp ntpdate traceroute python python-pip postfix &>> $LOG
+	echo -e "Dependências ...........................................[\033[0;32m OK \033[0m]"
 sleep 1
+echo "Aperte \033[0;32m<Enter>\033[0m para configurar base de dados do BareOS"
+read
+#
+#~Configurar a base de dados Postgres
+	apt -y install bareos-database-postgresql &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/grant_bareos_privileges &>> $LOG
+	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
+sleep 1
+echo "Aperte \033[0;32m<Enter>\033[0m para instalar o BareOS"
+read
 #
 #Instalar BareOS server.
-	echo "bareos-database-common bareos-database-common/dbconfig-install boolean false" | debconf-set-selections
+	#echo "bareos-database-common bareos-database-common/dbconfig-install boolean false" | debconf-set-selections
 	#echo "bareos-database-common bareos-database-common/postgresql/app-pass password $PASSWORD" | debconf-set-selections
 	#echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
 	#debconf-show bareos-database-common &>> $LOG
@@ -137,7 +147,12 @@ sleep 1
 	echo -e "Ferramentas BareOS .....................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
-#Instalar Ferramentas BareOS server.
+#Instalar Python BareOS server.
+	apt -y install python-bareos &>> $LOG
+	echo -e "Python BareOS .....................................[\033[0;32m OK \033[0m]"
+sleep 1
+#
+#Instalar Console BareOS server.
 	apt -y install bareos-bconsole &>> $LOG
 	echo -e "Console BareOS .........................................[\033[0;32m OK \033[0m]"
 sleep 1
@@ -145,14 +160,6 @@ sleep 1
 #Instalar interface WEB BareOS
 	apt -y install bareos-webui &>> $LOG
 	echo -e "Interface web ..........................................[\033[0;32m OK \033[0m]"
-sleep 1
-#
-#~Configurar a base de dados Postgres
-	apt -y install bareos-database-postgresql &>> $LOG
-	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
-	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
-	su postgres -c /usr/lib/bareos/scripts/grant_bareos_privileges &>> $LOG
-	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Criar usuários
