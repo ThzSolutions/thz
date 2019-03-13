@@ -12,7 +12,7 @@ DOMINIO="thz.intra"
 FQDN="bkp-001.thz.intra"
 DISTRO="xUbuntu_18.04/"
 USUARIO="admin"
-PASSWORD="P@ssW0rd"
+PASSWORD="admin"
 PROFILE="webui-admin"
 POSTFIX="No configuration"
 #
@@ -83,12 +83,12 @@ fi
 #
 #Adicionar o Repositório Universal:	
 	add-apt-repository universe &>> $LOG
-	echo -e "Repositório universal ..................................[\033[0;32m OK \033[0m]"
+	echo -e "Repositório Universal ..................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Adicionar o Repositório Multiversão:	
 	add-apt-repository multiverse &>> $LOG
-	echo -e "Repositório multiversão ................................[\033[0;32m OK \033[0m]"
+	echo -e "Repositório Multiversão ................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Adicionar o Repositório BareOS:
@@ -99,45 +99,37 @@ sleep 1
 #
 #Atualizar lista de repositórios:	
 	apt update &>> $LOG
-	echo -e "Lista de repositórios ..................................[\033[0;32m OK \033[0m]"
+	echo -e "Update .................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Atualizar sistema:	
 	apt -y upgrade &>> $LOG
-	echo -e "Atualizar do sistema ...................................[\033[0;32m OK \033[0m]"
+	echo -e "Upgrade ................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Remover pacotes desnecessários:	
 	apt -y autoremove &>> $LOG
 	echo -e "Remoção de pacodes desnecessários ......................[\033[0;32m OK \033[0m]"
 sleep 1
-echo "Aperte \033[0;32m<Enter>\033[0m para instalar dependencias"
-read
 #
 #Instalar dependencias:	
-	echo "postfix postfix/main_mailer_type string $POSTFIX" | debconf-set-selections
-	debconf-show postfix &>> $LOG
-	apt -y install postgresql php5 apache2 libapache2-mod-php5 ntp ntpdate traceroute python python-pip postfix &>> $LOG
+	apt -y install postgresql php apache2 ntp ntpdate traceroute python python-pip &>> $LOG
 	echo -e "Dependências ...........................................[\033[0;32m OK \033[0m]"
 sleep 1
-echo "Aperte \033[0;32m<Enter>\033[0m para configurar base de dados do BareOS"
-read
 #
 #~Configurar a base de dados Postgres
+	echo "bareos-database-postgresql bareos-database-postgresql/dbconfig-install boolean false" | debconf-set-selections
+	debconf-show bareos-database-common &>> $LOG
 	apt -y install bareos-database-postgresql &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/grant_bareos_privileges &>> $LOG
 	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
 sleep 1
-echo "Aperte \033[0;32m<Enter>\033[0m para instalar o BareOS"
-read
 #
 #Instalar BareOS server.
-	#echo "bareos-database-common bareos-database-common/dbconfig-install boolean false" | debconf-set-selections
-	#echo "bareos-database-common bareos-database-common/postgresql/app-pass password $PASSWORD" | debconf-set-selections
-	#echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
-	#debconf-show bareos-database-common &>> $LOG
+	echo "postfix postfix/main_mailer_type string $POSTFIX" | debconf-set-selections
+	debconf-show postfix &>> $LOG
 	apt -y install bareos &>> $LOG
 	echo -e "BareOS .................................................[\033[0;32m OK \033[0m]"
 sleep 1
@@ -149,7 +141,7 @@ sleep 1
 #
 #Instalar Python BareOS server.
 	apt -y install python-bareos &>> $LOG
-	echo -e "Python BareOS .....................................[\033[0;32m OK \033[0m]"
+	echo -e "Python BareOS ..........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar Console BareOS server.
@@ -171,6 +163,7 @@ sleep 1
 	echo "  Name = $USUARIO" >> /etc/bareos/bareos-dir.d/console/admin.conf
 	echo "  Password = $PASSWORD" >> /etc/bareos/bareos-dir.d/console/admin.conf
 	echo "  Profile = $PROFILE" >> /etc/bareos/bareos-dir.d/console/admin.conf
+	echo "  TLS Enable = No" >> /etc/bareos/bareos-dir.d/console/admin.conf
 	echo "}" >> /etc/bareos/bareos-dir.d/console/admin.conf
 	sleep 1
 	#
