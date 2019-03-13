@@ -124,6 +124,10 @@ sleep 1
 sleep 1
 #
 #Instalar BareOS server.
+	echo "bareos-database-common bareos-database-common/dbconfig-install boolean false" | debconf-set-selections
+	#echo "bareos-database-common bareos-database-common/postgresql/app-pass password $PASSWORD" | debconf-set-selections
+	#echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
+	#debconf-show bareos-database-common &>> $LOG
 	apt -y install bareos &>> $LOG
 	echo -e "BareOS .................................................[\033[0;32m OK \033[0m]"
 sleep 1
@@ -144,10 +148,6 @@ sleep 1
 sleep 1
 #
 #~Configurar a base de dados Postgres
-	#echo "bareos-database-common bareos-database-common/dbconfig-install boolean true" | debconf-set-selections
-	#echo "bareos-database-common bareos-database-common/postgresql/app-pass password $PASSWORD" | debconf-set-selections
-	#echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
-	#debconf-show bareos-database-common &>> $LOG
 	apt -y install bareos-database-postgresql &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
 	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
