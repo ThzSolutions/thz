@@ -123,26 +123,36 @@ sleep 1
 	echo -e "Mail ...................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
-#~Configurar a base de dados Postgres
-	echo "bareos-database-common bareos-database-common/dbconfig-install boolean true" | debconf-set-selections
-	echo "bareos-database-common bareos-database-common/postgresql/app-pass password $PASSWORD" | debconf-set-selections
-	echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
-	debconf-show bareos-database-common &>> $LOG
-	apt -y install bareos-database-postgresql &>> $LOG
-	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
+#Instalar BareOS server.
+	apt -y install bareos &>> $LOG
+	echo -e "BareOS .................................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
-#Instalar BareOS server.
-	apt -y install bareos bareos-tools bareos-bconsole bareos-database-postgresql &>> $LOG
-	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
-	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
-	su postgres -c /usr/lib/bareos/scripts/grant_bareos_privileges &>> $LOG
-	echo -e "Instalar BareOS ........................................[\033[0;32m OK \033[0m]"
+#Instalar Ferramentas BareOS server.
+	apt -y install bareos-tools &>> $LOG
+	echo -e "Ferramentas BareOS .....................................[\033[0;32m OK \033[0m]"
+sleep 1
+#
+#Instalar Ferramentas BareOS server.
+	apt -y install bareos-bconsole &>> $LOG
+	echo -e "Console BareOS .........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Instalar interface WEB BareOS
 	apt -y install bareos-webui &>> $LOG
 	echo -e "Interface web ..........................................[\033[0;32m OK \033[0m]"
+sleep 1
+#
+#~Configurar a base de dados Postgres
+	#echo "bareos-database-common bareos-database-common/dbconfig-install boolean true" | debconf-set-selections
+	#echo "bareos-database-common bareos-database-common/postgresql/app-pass password $PASSWORD" | debconf-set-selections
+	#echo "bareos-database-common bareos-database-common/app-password-confirm password $PASSWORD" | debconf-set-selections
+	#debconf-show bareos-database-common &>> $LOG
+	apt -y install bareos-database-postgresql &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/create_bareos_database &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/make_bareos_tables &>> $LOG
+	su postgres -c /usr/lib/bareos/scripts/grant_bareos_privileges &>> $LOG
+	echo -e "Base de dados ..........................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Criar usuários
@@ -171,7 +181,7 @@ sleep 1
 	echo "  Where ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo "  Plugin Options ACL = *all*" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
 	echo "}" >> /etc/bareos/bareos-dir.d/proﬁle/webui-admin.conf
-	echo -e "usuários ...............................................[\033[0;32m OK \033[0m]"
+	echo -e "Usuários ...............................................[\033[0;32m OK \033[0m]"
 sleep 1
 #
 #Iniciar serviços BareOS
