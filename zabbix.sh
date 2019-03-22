@@ -44,7 +44,7 @@ if [ "$USER" == "0" ]
 		echo -e "[ \033[0;32m OK \033[0m ] Permissão concedida ..."
 	else
 		echo -e "[ \033[0;31m ER \033[0m ] Premissões negadas (Root) ..."
-		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar" \033[0m"
+		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar \033[0m"
 		read
 fi
 sleep 1
@@ -55,7 +55,7 @@ if [ "$UBUNTU" == "18.04" ]
 		echo -e "[ \033[0;32m OK \033[0m ] Versão da distribuição compatível ..."
 	else
 		echo -e "[ \033[0;31m ER \033[0m ] Distribuição não homologada (Ubuntu 18.04) ..."
-		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar" \033[0m"
+		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar \033[0m"
 		read
 fi
 sleep 1
@@ -66,7 +66,7 @@ if [ "$KERNEL" == "4.15" ]
 		echo -e "[ \033[0;32m OK \033[0m ] O Kernel compatível ..."
 	else
 		echo -e "[ \033[0;31m ER \033[0m ] O Kernel incompativel (Linux 4.15 ou superior) ..."
-		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar" \033[0m"
+		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar \033[0m"
 		read
 fi
 sleep 1
@@ -78,7 +78,7 @@ if [ $? -eq 0 ]
 		echo -e "[ \033[0;32m OK \033[0m ] Internet ..."
 	else
 		echo -e "[ \033[0;31m ER \033[0m ] Sem conexão com a internet ..."
-		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar" \033[0m"
+		echo -e "[ \033[0;33m Pressione <ENTER> se quiser continuar \033[0m"
 		read
 fi
 sleep 1
