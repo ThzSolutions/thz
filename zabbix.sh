@@ -7,7 +7,7 @@
 # SAMBA-4.7.x
 #
 #Variável do servidor:
-NOME="srv-dc001"
+NOME="MON-ZAB001"
 #
 #Variáveis de Rede
 INTERFACE="enp0s3"
@@ -22,7 +22,7 @@ DNS1="172.20.0.1"
 DNS2="8.8.8.8"
 DNS3=""
 DOMINIO="thz.intra"
-FQDN="mon-mk001.thz.intra"
+FQDN="mon-zab001.thz.intra"
 #
 #variáveis do script
 HORAINICIAL=`date +%T`
