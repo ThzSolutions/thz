@@ -15,16 +15,16 @@ DBPASSWORD="ASD!@#456"
 #
 #Variáveis de Rede
 INTERFACE="enp0s3"
-IPv4="172.20.0.10"
-MASCARAv4="/16"
-GATEWAYv4="172.20.0.1"
+IPv4="10.00.0.55"
+MASCARAv4="/8"
+GATEWAYv4="10.10.0.1"
 IPv6=""
 MASCARAv6=""
 GATEWAYv6=""
-DNS0="172.20.0.10"
-DNS1="172.20.0.1"
-DNS2="8.8.8.8"
-DNS3=""
+DNS0="8.8.8.8"
+DNS1="4.4.8.8"
+DNS2="8.8.4.4"
+DNS3="4.4.4.4"
 DOMINIO="thz.intra"
 FQDN="mon-zab001.thz.intra"
 ZONA="America/Fortaleza"
@@ -97,9 +97,11 @@ sleep 1
 	echo -e "[ \033[0;32m OK \033[0m ] Repositório multiversão ..."
 sleep 1
 #
-#Adicionar o repositório zabbix:	
-	wget -q https://repo.zabbix.com/zabbix/4.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.0-2+bionic_all.deb
-	dpkg -i zabbix-release_4.0-2+bionic_all.deb
+#Adicionar o repositório zabbix:
+	echo "deb http://repo.zabbix.com/zabbix/$VERSION/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/zabbix.list
+	echo "deb-src http://repo.zabbix.com/zabbix/$VERSION/ubuntu $(lsb_release -cs) main" >> /etc/apt/sources.list.d/zabbix.list
+	#wget -q https://repo.zabbix.com/zabbix/4.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.0-2+bionic_all.deb
+	#dpkg -i zabbix-release_4.0-2+bionic_all.deb
 	echo -e "[ \033[0;32m OK \033[0m ] Repositório zabbix ..."
 sleep 1
 #
@@ -126,7 +128,7 @@ sleep 1
 #Criar banco de dados:
 	export DEBIAN_FRONTEND="interactive"
 	echo -e "\033[1;33m Digite uma senha para o banco de dados \033[0m"
-	sudo -u postgres createuser --pwprompt zabbix #precisa por a senha!
+	sudo -u postgres createuser --pwprompt zabbix
 	export DEBIAN_FRONTEND="noninteractive"
 	sudo -u postgres createdb -O zabbix zabbix
 	zcat -q /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
@@ -357,17 +359,17 @@ sleep 1
 	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
 	printf "
 network:
-	version: 2
-	renderer: networkd
-	ethernets:
-		$INTERFACE:
-			dhcp4: false
-			dhcp6: yes
-			addresses: [$IPv4$MASCARAv4, $IPv6$MASCARAv6]
-			gateway4: $GATEWAYv4
-			nameservers:
-				addresses: [$DNS0, $DNS1, $DNS2]
-				search: [$DOMINIO]
+    version: 2
+    renderer: networkd
+    ethernets:
+        $INTERFACE:
+            dhcp4: false
+            dhcp6: yes
+            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARAv6]
+            gateway4: $GATEWAYv4
+            nameservers:
+                addresses: [$DNS0, $DNS1, $DNS2, $DNS3]
+                search: [$DOMINIO]
 	" > /etc/netplan/01-netcfg.yaml
 	netplan --debug apply &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Interface de Rede ..."
