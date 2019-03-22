@@ -138,28 +138,31 @@ sleep 1
 ###	Nó de configuração distribuida
 NodeID=0
 
-###	Acesso
-# ListenPort=10051
+### Acesso
+ListenPort=10051
 # ListenIP=0.0.0.0
 # SourceIP=
 
 ### LOG
-LogFile=/var/log/zabbix/server.log
-LogFileSize=50
+LogFile=/var/log/zabbix/zabbix_server.log
+LogFileSize=0
 # DebugLevel=3
 
 ### TEMP
-# PidFile=/tmp/zabbix_server.pid
+SocketDir=/var/run/zabbix
+PidFile=/var/run/zabbix/zabbix_server.pid
 # TmpDir=/tmp
 
-###	BANCO DE DADOS
-DBHost=localhost
+### BANCO DE DADOS
+#DBHost=localhost
 DBName=zabbix
 DBUser=zabbix
 DBPassword=$DBPASSWORD
+LogSlowQueries=3000
 # DBSchema=
 # DBSocket=
 # DBPort=
+
 
 ### HISTORICO
 # HistoryStorageURL=
@@ -169,7 +172,7 @@ DBPassword=$DBPASSWORD
 # HistoryCacheSize=16M
 # HistoryIndexCacheSize=4M
 
-###	START
+### START
 # StartPollers=5
 # StartIPMIPollers=0
 # StartPollersUnreachable=7
@@ -188,7 +191,7 @@ DBPassword=$DBPASSWORD
 # StartProxyPollers=1
 # StatsAllowedIP=
 
-###JAVA
+### JAVA
 # JavaGateway=
 # JavaGatewayPort=10052
 
@@ -197,7 +200,7 @@ DBPassword=$DBPASSWORD
 # VMwareCacheSize=8M
 # VMwareTimeout=10
 
-###	SMTP
+### SMTP
 SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
 # EnableSNMPBulkRequests=0
 
@@ -212,33 +215,33 @@ SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
 # TrendCacheSize=4M
 # ValueCacheSize=8M
 
-###	SCRIPTS
+### SCRIPTS
 ExternalScripts=/usr/lib/zabbix/externalscripts
 AlertScriptsPath=/usr/lib/zabbix/alertscripts
 FpingLocation=/usr/bin/fping
 Fping6Location=/usr/bin/fping6
 # SSHKeyLocation=
 
-###	PROXY
+### PROXY
 # ProxyConfigFrequency=3600
 # ProxyDataFrequency=1
 
-###	SLL
+### SLL
 # SSLCertLocation=${datadir}/zabbix/ssl/certs
 # SSLKeyLocation=${datadir}/zabbix/ssl/keys
 # SSLCALocation=
 
-###	TLS
+### TLS
 # TLSCAFile=
 # TLSCRLFile=
 # TLSCertFile=
 # TLSKeyFile=
 
-###	MODULOS
+### MODULOS
 # LoadModulePath=${libdir}/modules
 # LoadModule=
 
-###	OUTROS
+### OUTROS
 Timeout=4
 # TrapperTimeout=300
 # UnreachablePeriod=45
@@ -247,7 +250,7 @@ Timeout=4
 # AllowRoot=0
 # User=zabbix
 
-###	INCLUIR
+### INCLUIR
 # Include=/usr/local/etc/zabbix_server.general.conf
 # Include=/usr/local/etc/zabbix_server.conf.d/
 # Include=/usr/local/etc/zabbix_server.conf.d/*.conf
