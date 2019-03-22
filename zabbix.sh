@@ -9,6 +9,10 @@
 #Variável do servidor:
 NOME="mon-zab001"
 #
+#Variáveis do Zabbix
+LIMGUAGEM="pt_BR.UTF-8"
+DBPASSWORD="ASD!@#456"
+#
 #Variáveis de Rede
 INTERFACE="enp0s3"
 IPv4="172.20.0.10"
@@ -134,119 +138,120 @@ sleep 1
 ###	Nó de configuração distribuida
 NodeID=0
 
-##	Acesso
-ListenPort=10051
-ListenIP=0.0.0.0
-SourceIP=
+###	Acesso
+# ListenPort=10051
+# ListenIP=0.0.0.0
+# SourceIP=
 
 ### LOG
 LogFile=/var/log/zabbix/server.log
 LogFileSize=50
-DebugLevel=3
+# DebugLevel=3
 
-## TEMP
-PidFile=/tmp/zabbix_server.pid
-TmpDir=/tmp
+### TEMP
+# PidFile=/tmp/zabbix_server.pid
+# TmpDir=/tmp
 
-##	BANCO DE DADOS
+###	BANCO DE DADOS
 DBHost=localhost
 DBName=zabbix
 DBUser=zabbix
-DBPassword=
-DBSchema=
-DBSocket=
-DBPort=
+DBPassword=$DBPASSWORD
+# DBSchema=
+# DBSocket=
+# DBPort=
 
-## HISTORICO
-HistoryStorageURL=
-HistoryStorageTypes=uint,dbl,str,log,text
-HistoryStorageDateIndex=0
-ExportFileSize=1G
-HistoryCacheSize=16M
-HistoryIndexCacheSize=4M
+### HISTORICO
+# HistoryStorageURL=
+# HistoryStorageTypes=uint,dbl,str,log,text
+# HistoryStorageDateIndex=0
+# ExportFileSize=1G
+# HistoryCacheSize=16M
+# HistoryIndexCacheSize=4M
 
 ###	START
-StartPollers=5
-StartIPMIPollers=0
-StartPollersUnreachable=7
-StartHTTPPollers=1
-Startpreprocessors=3
-StartTrappers=5
-StartPingers=1
-StartDiscoverers=1
-StartTimers=1
-StartEscalators=1
-StartAlerters=3
-StartJavaPollers=0
-StartSNMPTrapper=0
-StartVMwareCollectors=0
-StartDBSyncers=4
-StartProxyPollers=1
-StatsAllowedIP=
+# StartPollers=5
+# StartIPMIPollers=0
+# StartPollersUnreachable=7
+# StartHTTPPollers=1
+# Startpreprocessors=3
+# StartTrappers=5
+# StartPingers=1
+# StartDiscoverers=1
+# StartTimers=1
+# StartEscalators=1
+# StartAlerters=3
+# StartJavaPollers=0
+# StartSNMPTrapper=0
+# StartVMwareCollectors=0
+# StartDBSyncers=4
+# StartProxyPollers=1
+# StatsAllowedIP=
 
-##JAVA
-JavaGateway=
-JavaGatewayPort=10052
+###JAVA
+# JavaGateway=
+# JavaGatewayPort=10052
 
-## VMWARE
-VMwareFrequency=60
-VMwareCacheSize=8M
-VMwareTimeout=10
+### VMWARE
+# VMwareFrequency=60
+# VMwareCacheSize=8M
+# VMwareTimeout=10
 
-##	SMTP
+###	SMTP
 SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
-EnableSNMPBulkRequests=0
+# EnableSNMPBulkRequests=0
 
-## HOUSEKEEPINGF
-HousekeepingFrequency=1
-MaxHousekeeperDelete=500
-SenderFrequency=30
+### HOUSEKEEPINGF
+# HousekeepingFrequency=1
+# MaxHousekeeperDelete=500
+# SenderFrequency=30
 
-## CACHE
-CacheSize=8M
-CacheUpdateFrequency=60
-TrendCacheSize=4M
-ValueCacheSize=8M
+### CACHE
+# CacheSize=8M
+# CacheUpdateFrequency=60
+# TrendCacheSize=4M
+# ValueCacheSize=8M
 
-##	SCRIPTS
+###	SCRIPTS
 ExternalScripts=/usr/lib/zabbix/externalscripts
 AlertScriptsPath=/usr/lib/zabbix/alertscripts
 FpingLocation=/usr/bin/fping
 Fping6Location=/usr/bin/fping6
+# SSHKeyLocation=
 
-##	PROXY
-ProxyConfigFrequency=3600
-ProxyDataFrequency=1
+###	PROXY
+# ProxyConfigFrequency=3600
+# ProxyDataFrequency=1
 
-##	SLL
-SSLCertLocation=${datadir}/zabbix/ssl/certs
-SSLKeyLocation=${datadir}/zabbix/ssl/keys
-SSLCALocation=
+###	SLL
+# SSLCertLocation=${datadir}/zabbix/ssl/certs
+# SSLKeyLocation=${datadir}/zabbix/ssl/keys
+# SSLCALocation=
 
-##	TLS
-TLSCAFile=
-TLSCRLFile=
-TLSCertFile=
-TLSKeyFile=
+###	TLS
+# TLSCAFile=
+# TLSCRLFile=
+# TLSCertFile=
+# TLSKeyFile=
 
-##	MODULOS
-LoadModulePath=${libdir}/modules
-LoadModule=
+###	MODULOS
+# LoadModulePath=${libdir}/modules
+# LoadModule=
 
-##	OUTROS
+###	OUTROS
 Timeout=4
-SSHKeyLocation=
-TrapperTimeout=300
-UnreachablePeriod=45
-UnavailableDelay=60
-UnreachableDelay=15
-AllowRoot=0
-User=zabbix
+# TrapperTimeout=300
+# UnreachablePeriod=45
+# UnavailableDelay=60
+# UnreachableDelay=15
+# AllowRoot=0
+# User=zabbix
 
-##	INCLUIR
-Include=/usr/local/etc/zabbix_server.general.conf
-Include=/usr/local/etc/zabbix_server.conf.d/
-Include=/usr/local/etc/zabbix_server.conf.d/*.conf" > /etc/zabbix/zabbix_server.conf
+###	INCLUIR
+# Include=/usr/local/etc/zabbix_server.general.conf
+# Include=/usr/local/etc/zabbix_server.conf.d/
+# Include=/usr/local/etc/zabbix_server.conf.d/*.conf
+	" > /etc/zabbix/zabbix_server.conf
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração zabbix ..."
 
 #
@@ -326,8 +331,8 @@ Include=/usr/local/etc/zabbix_server.conf.d/*.conf" > /etc/zabbix/zabbix_server.
 #
 #
 #Instalando idioma PT-BR UTF-8:
-	locale-gen pt_BR.UTF-8
-	echo -e "[ \033[0;32m OK \033[0m ] Idioma PT-BR.UTF8 ..."
+	locale-gen $LIMGUAGEM
+	echo -e "[ \033[0;32m OK \033[0m ] Idioma $LIMGUAGEM ..."
 sleep 1
 #
 #Carregar configuralções do zabbix:
