@@ -7,7 +7,7 @@
 # SAMBA-4.7.x
 #
 #Variável do servidor:
-NOME="MON-ZAB001"
+NOME="srv-dc001"
 #
 #Variáveis de Rede
 INTERFACE="enp0s3"
@@ -22,7 +22,7 @@ DNS1="172.20.0.1"
 DNS2="8.8.8.8"
 DNS3=""
 DOMINIO="thz.intra"
-FQDN="mon-zab001.thz.intra"
+FQDN="mon-mk001.thz.intra"
 #
 #variáveis do script
 HORAINICIAL=`date +%T`
@@ -33,7 +33,6 @@ LOG="/var/log/$(echo $0 | cut -d'/' -f2)"
 #
 # Exportando o recurso de Noninteractive:
 export DEBIAN_FRONTEND="noninteractive"
-#clear
 #
 #Registrar inicio dos processos:
 	echo -e "Início do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
@@ -94,7 +93,7 @@ sleep 1
 sleep 1
 #
 #Adicionar o repositório zabbix:	
-	wget https://repo.zabbix.com/zabbix/4.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.0-2+bionic_all.deb
+	wget -q https://repo.zabbix.com/zabbix/4.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.0-2+bionic_all.deb
 	dpkg -i zabbix-release_4.0-2+bionic_all.deb
 	echo -e "[ \033[0;32m OK \033[0m ] Repositório zabbix ..."
 sleep 1
@@ -125,12 +124,12 @@ sleep 1
 	sudo -u postgres createuser --pwprompt zabbix #precisa por a senha!
 	export DEBIAN_FRONTEND="noninteractive"
 	sudo -u postgres createdb -O zabbix zabbix
-	zcat /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
+	zcat -q /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
 	echo -e "[ \033[0;32m OK \033[0m ] Banco de dados ..."
 sleep 1
 #
 #Configurar Servidor:
-	printf"	###	Nó de configuração distribuida
+	printf "###	Nó de configuração distribuida
 			NodeID=0
 
 			###	Acesso
@@ -250,8 +249,7 @@ sleep 1
 	
 #
 #Configurar apache:
-	printf"# Define /zabbix alias, this is the default
-			<IfModule mod_alias.c>
+	printf "<IfModule mod_alias.c>
 				Alias /zabbix /usr/share/zabbix
 			</IfModule>
 
