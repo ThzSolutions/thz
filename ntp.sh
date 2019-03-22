@@ -6,9 +6,9 @@
 # Kernel Linux 4.15.x
 #
 #Variáveis do NTP
-NTPINTRA0="a.ntp.br"
-NTPINTRA1="b.ntp.br"
-NTPINTRA2="c.ntp.br"
+NTPINTRA0=""
+NTPINTRA1=""
+NTPINTRA2=""
 ZONA="America/Fortaleza"
 #
 # Exportando o recurso de Noninteractive:
@@ -50,7 +50,8 @@ export DEBIAN_FRONTEND="noninteractive"
 			restrict 127.0.1.1
 			restrict ::1
 			restrict default kod notrap nomodify nopeer noquery
-			restrict -6 default kod notrap nomodify nopeer noquery" >> /etc/ntp.conf
+			restrict -6 default kod notrap nomodify nopeer noquery
+	" > /etc/ntp.conf
 	systemctl stop ntp.service &>> $LOG
 	timedatectl set-timezone "$ZONA" &>> $LOG
 	ntpdate -dquv $NTP &>> $LOG
@@ -59,6 +60,5 @@ export DEBIAN_FRONTEND="noninteractive"
 	hwclock --systohc &>> $LOG
 	#echo "Data/Hora de hardware: `hwclock`\n"
 	#echo "Data/Hora de software: `date`\n"
-	echo -e "[ \033[0;32m OK \033[0m ] NTP ..."
 sleep 1
 exit 1
