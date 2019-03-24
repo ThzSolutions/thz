@@ -9,7 +9,7 @@
 ZONA="America/Fortaleza"
 #
 # Exportando o recurso de Noninteractive:
-export DEBIAN_FRONTEND="noninteractive"
+# export DEBIAN_FRONTEND="noninteractive"
 #
 #Configurar NTP:
 	apt -y install ntp ntpdate
