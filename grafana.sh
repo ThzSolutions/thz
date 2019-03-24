@@ -25,6 +25,7 @@ DNS0="172.20.0.10"
 DNS1="4.4.8.8"
 DNS2="8.8.4.4"
 DNS3="8.8.8.8"
+LOOP="127.0.0.1"
 #
 #variáveis do script
 HORAINICIAL=`date +%T`
@@ -143,7 +144,7 @@ sleep 1
 	printf "$NOME" > /etc/hostname
 	printf "
 #IP versão 4
-127.0.0.1		$NOME	localhost	$FQDN
+$LOOP		$NOME	localhost	$FQDN
 $IPv4		$NOME	localhost	$FQDN
 
 #IP versão 6
