@@ -114,6 +114,11 @@ sleep 1
 	echo -e "[ \033[0;32m OK \033[0m ] Curl ..."
 sleep 1
 #
+#Instalar gnupg:	
+	apt -y install gnupg gnupg1 gnupg2
+	echo -e "[ \033[0;32m OK \033[0m ] Gnupg ..."
+sleep 1
+#
 #Adicionar repositório grafana
 	echo "deb https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list
 	curl -s https://packages.grafana.com/gpg.key | sudo apt-key add - &>> $LOG
