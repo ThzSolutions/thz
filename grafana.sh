@@ -41,27 +41,7 @@
 #	Padronização:
 	bash base.sh
 	bash ntp.sh
-
-#	Adicionar repositório grafana
-	echo "deb https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list
-	curl -s https://packages.grafana.com/gpg.key | sudo apt-key add - &>> $LOG
-	apt -y -q update &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Repositórios do grafana..."
-sleep 1
-
-#	Instalar grafana:
-	apt -y -q install grafana apt-transport-https
-	echo -e "[ \033[0;32m OK \033[0m ] Grafana ..."
-sleep 1
-
-#	Configurar grafana
-	update-rc.d grafana-server defaults
-	systemctl enable grafana-server.service
-	systemctl daemon-reload
-	systemctl start grafana-server
-	echo -e "[ \033[0;32m OK \033[0m ] Configuração do grafana..."
-sleep 1
-
+	
 #	Auterar nome do servidor (HOSTNAME):
 	printf "$NOME" > /etc/hostname
 	printf "
@@ -95,6 +75,37 @@ network:
 	netplan --debug apply &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
 sleep 1
+
+#	Adicionar repositório grafana
+	echo "deb https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list
+	curl -s https://packages.grafana.com/gpg.key | sudo apt-key add - &>> $LOG
+	apt -y -q update &>> $LOG
+	echo -e "[ \033[0;32m OK \033[0m ] Repositórios do grafana ..."
+sleep 1
+
+#	Instalar grafana:
+	apt -y -q install grafana apt-transport-https
+	echo -e "[ \033[0;32m OK \033[0m ] Grafana ..."
+sleep 1
+
+#	Configurar grafana
+	update-rc.d grafana-server defaults
+	systemctl enable grafana-server.service
+	systemctl daemon-reload
+	systemctl start grafana-server
+	echo -e "[ \033[0;32m OK \033[0m ] Configuração do grafana ..."
+sleep 1
+
+#	Configurar banco de dados
+	su postgres -c "dropuser grafana"
+	echo -e "\033[0;33m Senha pra o banco de dados grafana \033[0m"
+	export DEBIAN_FRONTEND="interactive"
+	su postgres -c "createuser -a -d -E -P grafana"
+	export DEBIAN_FRONTEND="noninteractive"
+	su postgres -c "dropdb grafana"
+	su postgres -c "createdb -O grafana grafana"
+	exit
+	echo -e "[ \033[0;32m OK \033[0m ] Configuração do bando de dados ..."
 
 #Finalizar
 	HORAFINAL=$(date +%T)
