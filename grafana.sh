@@ -8,6 +8,9 @@
 #
 #Variável do servidor:
 NOME="srv-monit002"
+DOMINIO="thz.intra"
+ZONA="America/Fortaleza"
+FQDN="$NOME.$DOMINIO"
 #
 #Variáveis de Rede
 NETPLAN="true"
@@ -22,9 +25,6 @@ DNS0="172.20.0.10"
 DNS1="4.4.8.8"
 DNS2="8.8.4.4"
 DNS3="8.8.8.8"
-DOMINIO="thz.intra"
-FQDN="srv-monit002.thz.intra"
-ZONA="America/Fortaleza"
 #
 #variáveis do script
 HORAINICIAL=`date +%T`
@@ -114,11 +114,6 @@ sleep 1
 	echo -e "[ \033[0;32m OK \033[0m ] Curl ..."
 sleep 1
 #
-#Instalar gnupg:	
-	apt -y install gnupg gnupg1 gnupg2
-	echo -e "[ \033[0;32m OK \033[0m ] Gnupg ..."
-sleep 1
-#
 #Adicionar repositório grafana
 	echo "deb https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list
 	curl -s https://packages.grafana.com/gpg.key | sudo apt-key add - &>> $LOG
@@ -147,9 +142,13 @@ sleep 1
 #Auterar nome do servidor (HOSTNAME):
 	printf "$NOME" > /etc/hostname
 	printf "
+#IP versão 4
 127.0.0.1		$NOME	localhost	$FQDN
-::1				$NOME	localhost	$FQDN
-$IP				$NOME	localhost	$FQDN
+$IPv4		$NOME	localhost	$FQDN
+
+#IP versão 6
+::1			$NOME	localhost	$FQDN
+$IPv6		$NOME	localhost	$FQDN
 	" > /etc/hosts
 	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
 sleep 1
@@ -173,8 +172,9 @@ network:
                 search: [$DOMINIO]
 		" > /etc/netplan/01-netcfg.yaml
 		netplan --debug apply &>> $LOG
-		echo -e "[ \033[0;32m OK \033[0m ] Configurações de Rede ..."
+		echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
 	else
+		echo -e "[ \033[0;33m NO \033[0m ] Configurações de rede ..."
 fi
 sleep 1
 #
@@ -190,3 +190,4 @@ TEMPO=$(date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S")
 	echo -e "Pressione \033[0;32m <Enter> \033[0m para finalizar o processo."
 	read
 exit 1
+
