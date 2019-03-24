@@ -97,12 +97,12 @@ sleep 1
 sleep 1
 
 #	Configurar banco de dados
-	su postgres -c "dropuser grafana"
+#	su postgres -c "dropuser grafana"
 	echo -e "\033[0;33m Senha pra o banco de dados grafana \033[0m"
 	export DEBIAN_FRONTEND="interactive"
 	su postgres -c "createuser -a -d -E -P grafana"
 	export DEBIAN_FRONTEND="noninteractive"
-	su postgres -c "dropdb grafana"
+#	su postgres -c "dropdb grafana"
 	su postgres -c "createdb -O grafana grafana"
 	exit
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração do bando de dados ..."
