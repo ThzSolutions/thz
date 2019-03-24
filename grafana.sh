@@ -40,6 +40,7 @@
 
 #	Padronização:
 	bash base.sh
+	bash ntp.sh
 
 #	Adicionar repositório grafana
 	echo "deb https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list
@@ -48,7 +49,7 @@
 	echo -e "[ \033[0;32m OK \033[0m ] Repositórios do grafana..."
 sleep 1
 
-#	Instalar grafana:	
+#	Instalar grafana:
 	apt -y -q install grafana apt-transport-https
 	echo -e "[ \033[0;32m OK \033[0m ] Grafana ..."
 sleep 1
@@ -59,10 +60,6 @@ sleep 1
 	systemctl daemon-reload
 	systemctl start grafana-server
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração do grafana..."
-
-#NTP:
-	bash ntp.sh
-	echo -e "[ \033[0;32m OK \033[0m ] NTP ..."
 sleep 1
 
 #	Auterar nome do servidor (HOSTNAME):
