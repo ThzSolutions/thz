@@ -46,7 +46,7 @@ restrict -6 default kod notrap nomodify nopeer noquery
 #	" > /etc/ntp.conf
 	systemctl stop ntp.service
 	timedatectl set-timezone "$ZONA"
-	ntpdate -dquv $NTP
+	ntpdate -dquv $SERVIDORNTP0
 	update-rc.d ntp.service defaults
 	systemctl enable ntp.service
 	systemctl start ntp.service
