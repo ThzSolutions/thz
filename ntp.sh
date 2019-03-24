@@ -12,7 +12,7 @@
 	ZONA="America/Fortaleza"
 
 #	Instalar NTP:
-	apt -y install ntp ntpdate
+	apt -y -q install ntp ntpdate
 	echo -e "[ \033[0;32m OK \033[0m ] NTP ..."
 
 #	Configurar NTP:
