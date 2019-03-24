@@ -7,29 +7,23 @@
 # SAMBA-4.7.x
 #
 #Variável do servidor:
-NOME="srv-dados001"
-#
-#Variáveis postgres
-USUARIO="supremo"
-SENHA="QWE!@#456"
-PSENHA="ASD!@#456"
-EMAIL="levibarrosomenezes@gmail.com"
+NOME="srv-monit002"
 #
 #Variáveis de Rede
 NETPLAN="true"
 INTERFACE="enp0s3"
-IPv4="172.20.0.101"
+IPv4="172.20.0.15"
 MASCARAv4="/16"
 GATEWAYv4="172.20.0.1"
 IPv6=""
 MASCARAv6=""
 GATEWAYv6=""
-DNS0="8.8.8.8"
+DNS0="172.20.0.10"
 DNS1="4.4.8.8"
 DNS2="8.8.4.4"
-DNS3="4.4.4.4"
+DNS3="8.8.8.8"
 DOMINIO="thz.intra"
-FQDN="srv-dados001.thz.intra"
+FQDN="srv-monit002.thz.intra"
 ZONA="America/Fortaleza"
 #
 #variáveis do script
@@ -191,4 +185,3 @@ TEMPO=$(date -u -d "0 $HORAFINAL01 sec - $HORAINICIAL01 sec" +"%H:%M:%S")
 	echo -e "Pressione \033[0;32m <Enter> \033[0m para finalizar o processo."
 	read
 exit 1
-
