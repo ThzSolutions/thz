@@ -26,7 +26,6 @@
 	DNS1="4.4.8.8"
 	DNS2="8.8.4.4"
 	DNS3="8.8.8.8"
-	LOOP="127.0.0.1"
 
 #	variáveis do script
 	HORAINICIAL=`date +%T`
@@ -46,13 +45,16 @@
 	printf "$NOME" > /etc/hostname
 	printf "
 #IP versão 4
-$LOOP		$NOME	localhost	$FQDN
-$IPv4		$NOME	localhost	$FQDN
+127.0.0.1		localhost.localdomain	localhosta
+$IPv4			$FQDN	$NOME
 
 #IP versão 6
-::1			$NOME	localhost	$FQDN
-$IPv6		$NOME	localhost	$FQDN
-	" > /etc/hosts
+::1			localhost	ip6-localhost	ip6-loopback
+ff02 :: 1 	ip6-allnodes
+ff02 :: 2 	ip6-allrouters
+$IPv6		$FQDN	$NOME
+
+#	" > /etc/hosts
 	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
 sleep 1
 
