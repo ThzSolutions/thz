@@ -11,7 +11,7 @@
 	USER=`id -u`
 	UBUNTU=`lsb_release -rs`
 	KERNEL=`uname -r | cut -d'.' -f1,2`
-		BASELOG="/var/log/base.sh"
+	BASELOG="/var/log/base.sh"
 	
 #	Variáveis do NTP
 	SERVIDORNTP0="a.ntp.br"
@@ -151,13 +151,10 @@ restrict ::1
 restrict default kod notrap nomodify nopeer noquery
 restrict -6 default kod notrap nomodify nopeer noquery
 #	" > /etc/ntp.conf
-	systemctl stop ntp.service
 	timedatectl set-timezone "$ZONA"
 	ntpdate -dquv $NTP
-	update-rc.d ntp.service defaults
 	systemctl enable ntp.service
-	systemctl start ntp.service
-	ntpq -pn
+	systemctl restart ntp.service
 	hwclock --systohc
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração NTP ..."
 	sleep 1
