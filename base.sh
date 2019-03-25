@@ -106,6 +106,11 @@
 	echo -e "[ \033[0;32m OK \033[0m ] SSH ..."
 	sleep 1
 	
+#	Instalar aptitude:	
+	apt -y -q install aptitude &>> $BASELOG
+	echo -e "[ \033[0;32m OK \033[0m ] Aptitude ..."
+	sleep 1
+	
 #	Instalar htop:	
 	apt -y -q install htop &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Htop ..."
