@@ -52,6 +52,7 @@
 
 #	Padronização:
 	bash base.sh
+	export DEBIAN_FRONTEND="noninteractive"
 	
 #	Auterar nome do servidor (HOSTNAME):
 	printf "$NOME" > /etc/hostname
