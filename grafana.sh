@@ -39,8 +39,7 @@
 
 #	Padronização:
 	bash base.sh
-	bash ntp.sh
-	
+
 #	Auterar nome do servidor (HOSTNAME):
 	printf "$NOME" > /etc/hostname
 	printf "
