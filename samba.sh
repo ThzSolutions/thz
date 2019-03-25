@@ -6,7 +6,7 @@
 #	Samba4
 
 #	Variável do servidor:
-	NOME="smb001"
+	NOME="samba001"
 	DOMINIO="thz.intra"
 	ZONA="America/Fortaleza"
 	FQDN="$NOME.$DOMINIO"
@@ -72,54 +72,35 @@ $IPv6		$FQDN	$NOME
 	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
 	sleep 1
 
-#	Configurar interfaces de rede:
-	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
-	printf "
-network:
-    version: 2
-    renderer: networkd
-    ethernets:
-        $INTERFACE:
-            dhcp4: $DHCPv4
-            dhcp6: $DHCPv6
-            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARAv6]
-            gateway4: $GATEWAYv4
-            nameservers:
-                addresses: [$DNS0, $DNS1, $DNS2, $DNS3]
-                search: [$DOMINIO]
-#	" > /etc/netplan/01-netcfg.yaml
-	netplan --debug apply &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
-	sleep 1
-
 #	Instalar Python
-	apt -y -q install python-all-dev python-dev python-crypto python-dbg python-dev python-dnspython \
-	python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown \
-	python3-dev
-	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
-	sleep 1
+#	apt -y -q install python-all-dev python-dev python-crypto python-dbg python-dev python-dnspython \
+#	python3-dnspython python-markdown python3-markdown \
+#	python3-dev
+#	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
+#	sleep 1
 
 #	Instalar Perl
-	apt -y -q install perl perl-modules 
-	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
-	sleep 1
+#	apt -y -q install perl perl-modules 
+#	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
+#	sleep 1
 
 #	Instalar Utilitários
-	apt -y -q install acl attr autoconf bind9utils bison \
-	build-essential	debhelper dnsutils docbook-xml docbook-xsl \
-	cifs-utils traceroute winbind ldb-tools unzip \
-	flex gdb xsltproc debconf-utils figlet \
-	kcc tree
+	apt -y -q install acl attr cifs-utils winbind dnsutils debconf-utils lmdb-utils
+#	bind9utils bison build-essential debhelper\
+#	docbook-xml docbook-xsl unzip autoconf\
+#	flex gdb xsltproc figlet \
+#	traceroute ldb-tools \
+#	kcc tree
 	echo -e "[ \033[0;32m OK \033[0m ] Utilitários ..."
 	sleep 1
 
 #	Instalar Bibliotecas:	
-	apt -y -q install libacl1-dev libaio-dev libarchive-dev libattr1-dev libblkid-dev \
-	libparse-yapp-perl libdap2-dev libncurses5-dev libgnutls28-dev libpam-winbind \
-	libgpgme-dev libjson-perl libpam0g-dev libnss-winbind libldap2-dev \
-	libbsd-dev libjansson-dev libcap-dev libcups2-dev lmdb-utils \
-	libpopt-dev libreadline-dev liblmdb-dev nettle-dev pkg-config \
-	zlib1g-dev \
+#	apt -y -q install libacl1-dev libaio-dev libarchive-dev libattr1-dev libblkid-dev \
+#	libparse-yapp-perl libdap2-dev libncurses5-dev libgnutls28-dev libpam-winbind \
+#	libgpgme-dev libjson-perl libpam0g-dev libnss-winbind libldap2-dev \
+#	libbsd-dev libjansson-dev libcap-dev libcups2-dev \
+#	libpopt-dev libreadline-dev liblmdb-dev nettle-dev pkg-config \
+#	zlib1g-dev \
 	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..."
 	sleep 1
 
@@ -133,6 +114,7 @@ network:
 	debconf-show krb5-config &>> $LOG
 	apt -y -q install krb5-user krb5-config &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Kerberos ..."
+	sleep 1
 
 #	Configurar kerberos:
 	printf "
@@ -240,7 +222,7 @@ aliases:    	nis [NOTFOUND=return] files
 	--realm=$REINO \
 	--domain=$SMBDOMINIO \
 	--server-role=$REGRA \
-	--option="dns forwarder = $DNSENCAMINHADO"
+	--option="dns forwarder = $DNSENCAMINHADO" \
 	--dns-backend=$DNSBE \
 	--use-rfc2307 \
 	--adminpass=$SENHA \
@@ -261,7 +243,7 @@ aliases:    	nis [NOTFOUND=return] files
 #	--option="client use spnego = no" \
 #	--option="use spnego = no" \
 #	--option="client use spnego principal = no" &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio do active directory ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
 #	Configurar SAMBA4:
 	systemctl enable samba-ad-dc.service &>> $LOG
@@ -275,6 +257,26 @@ aliases:    	nis [NOTFOUND=return] files
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U Administrator --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do Controlador de Domínio ..."
+	sleep 1
+	
+#	Configurar interfaces de rede:
+	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
+	printf "
+network:
+    version: 2
+    renderer: networkd
+    ethernets:
+        $INTERFACE:
+            dhcp4: $DHCPv4
+            dhcp6: $DHCPv6
+            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARAv6]
+            gateway4: $GATEWAYv4
+            nameservers:
+                addresses: [$DNS0, $DNS1, $DNS2, $DNS3]
+                search: [$DOMINIO]
+#	" > /etc/netplan/01-netcfg.yaml
+	netplan --debug apply &>> $LOG
+	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
 	sleep 1
 
 #	Finalizar
