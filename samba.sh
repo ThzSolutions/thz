@@ -4,7 +4,6 @@
 #	Data de criação: 24/03/2019
 #	Versão: 0.03
 #	Samba4
-	echo " \033[0;32m Não se preocupe só termina quando acaba !!! \033[0m"
 	
 #	Variável do servidor:
 	NOME="samba001"
@@ -13,19 +12,32 @@
 	FQDN="$NOME.$DOMINIO"
 
 #	Variáveis de Rede
-	INTERFACE="enp0s3"
-	DHCPv4="true"
-	IPv4="172.20.0.10"
-	MASCARAv4="/16"
-	GATEWAYv4="172.20.0.1"
-	DHCPv6="true"
-	IPv6=""
-	MASCARAv6=""
-	GATEWAYv6=""
-	DNS0="172.20.0.10"
-	DNS1="4.4.8.8"
-	DNS2="8.8.4.4"
-	DNS3="8.8.8.8"
+	INTERFACE0="enp0s3"
+	DHCP0v4="true"
+	IP0v4="172.20.0.10"
+	MASCARA0v4="/16"
+	GATEWAY0v4="172.20.0.1"
+	DHCP0v6="true"
+	IP0v6=""
+	MASCARA0v6=""
+	GATEWAY0v6=""
+	DNS00="172.20.0.10"
+	DNS01="4.4.8.8"
+	DNS02="8.8.4.4"
+	DNS03="8.8.8.8"
+	INTERFACE1="enp0s8"
+	DHCP1v4="true"
+	IP1v4="10.0.0.17"
+	MASCARA1v4="/16"
+	GATEWAY1v4="10.10.0.1"
+	DHCP1v6="true"
+	IP1v6=""
+	MASCARA1v6=""
+	GATEWAY1v6=""
+	DNS10="8.8.8.8"
+	DNS11="4.4.8.8"
+	DNS12="8.8.4.4"
+	DNS13="172.20.0.10"
 
 #	variáveis do script
 	HORAINICIAL=`date +%T`
@@ -63,13 +75,21 @@ network:
     version: 2
     renderer: networkd
     ethernets:
-        $INTERFACE:
-            dhcp4: $DHCPv4
-            dhcp6: $DHCPv6
-            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARAv6]
-            gateway4: $GATEWAYv4
+        $INTERFACE0:
+            dhcp4: $DHCP0v4
+            dhcp6: $DHCP0v6
+            addresses: [$IPv4$MASCARA0v4, $IPv6$MASCARA0v6]
+            gateway4: $GATEWAY0v4
             nameservers:
-                addresses: [$DNS0, $DNS1, $DNS2, $DNS3]
+                addresses: [$DNS00, $DNS01, $DNS02, $DNS03]
+                search: [$DOMINIO]
+		$INTERFACE1:
+            dhcp4: $DHCP1v4
+            dhcp6: $DHCP1v6
+            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARA1v6]
+            gateway4: $GATEWAY1v4
+            nameservers:
+                addresses: [$DNS10, $DNS11, $DNS12, $DNS13]
                 search: [$DOMINIO]
 #	" > /etc/netplan/01-netcfg.yaml
 	netplan --debug apply &>> $LOG
@@ -84,21 +104,19 @@ network:
 $IPv4			$FQDN	$NOME
 
 #IP versão 6
-::1			localhost	ip6-localhost	ip6-loopback
-fe00::0		ip6-localnet
-ff02::1		ip6-allnodes
-ff02::2		ip6-allrouters
-ff02::3		ip6-allhosts
-$IPv6		$FQDN	$NOME
+::1				localhost	ip6-localhost	ip6-loopback
+fe00::0			ip6-localnet
+ff02::1			ip6-allnodes
+ff02::2			ip6-allrouters
+ff02::3			ip6-allhosts
+$IPv6			$FQDN	$NOME
 
 #	" > /etc/hosts
 	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
 	sleep 1
 
 #	Instalar python
-	apt -y install python-all-dev python-crypto python-dbg python-dev \
-	python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown \
-	python3-dev python-dnspython
+	apt -y install python python-all-dev python-crypto python-dbg python-dev python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown python3-dev python-dnspython
 	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
 	sleep 1
 
@@ -108,17 +126,12 @@ $IPv6		$FQDN	$NOME
 	sleep 1
 
 #	Instalar recursos samba
-	apt -y install acl attr autoconf bind9utils bison build-essential \
-	debhelper dnsutils docbook-xml docbook-xsl flex gdb \
-	xsltproc lmdb-utils libjansson-dev
+	apt -y install acl attr autoconf bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev
 	echo -e "[ \033[0;32m OK \033[0m ] Recursos samba ..."
 	sleep 1
 
 #	Instalar bibliotecas:	
-	apt -y install libacl1-dev libaio-dev libarchive-dev libattr1-dev \
-	libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev \
-	libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev \
-	libblkid-dev libbsd-dev
+	apt -y install libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev
 	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..."
 	sleep 1
 
@@ -236,16 +249,7 @@ aliases:    	nis [NOTFOUND=return] files
 #	Provisionar controlador de domínio do active directory:
 	systemctl stop samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	mv -v /etc/samba/smb.conf /etc/samba/smb.conf.bkp &>> $LOG
-	samba-tool domain provision \
-	--realm=$REINO \
-	--domain=$SMBDOMINIO \
-	--server-role=$REGRA \
-	--option="dns forwarder = $DNSENCAMINHADO" \
-	--dns-backend=$DNSBE \
-	--use-rfc2307 \
-	--adminpass=$SENHA \
-	--function-level=$LEVEL \
-	--site=$REINO \
+	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSENCAMINHADO" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO
 #	--host-ip=$IP \
 #	--option="interfaces = lo $INTERFACE" \
 #	--option="bind interfaces only = yes" 
@@ -264,8 +268,8 @@ aliases:    	nis [NOTFOUND=return] files
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
 #	Configurar SAMBA4:
-	systemctl enable samba-ad-dc.service &>> $LOG
-	systemctl restart samba-ad-dc.service &>> $
+	systemctl enable samba-ad-dc.service smbd.service nmbd.service &>> $LOG
+	systemctl restart samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 #	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
 #	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
 #	systemctl unmask samba-ad-dc.service &>> $LOG
