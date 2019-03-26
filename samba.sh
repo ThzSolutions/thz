@@ -6,7 +6,7 @@
 #	Samba
 	
 #	Variável do servidor:
-	NOME="samba001"
+	NOME="smb01"
 	DOMINIO="thz.intra"
 	ZONA="America/Fortaleza"
 	FQDN="$NOME.$DOMINIO"
@@ -18,20 +18,14 @@
 	MASCARA0v4="/16"
 	GATEWAY0v4="172.20.0.1"
 	DHCP0v6="true"
-	DNS00="172.20.0.10"
-	DNS01="4.4.8.8"
-	DNS02="8.8.4.4"
-	DNS03="8.8.8.8"
 	INTERFACE1="enp0s8"
 	DHCP1v4="true"
 	IP1v4="10.0.0.17"
 	MASCARA1v4="/8"
 	GATEWAY1v4="10.10.0.1"
 	DHCP1v6="true"
-	DNS10="8.8.8.8"
-	DNS11="4.4.8.8"
-	DNS12="8.8.4.4"
-	DNS13="172.20.0.10"
+	DNSEX0="8.8.8.8"
+	DNSEX1="4.4.8.8"
 
 #	variáveis do script
 	HORAINICIAL=`date +%T`
@@ -70,7 +64,7 @@ network:
             addresses: [$IP0v4$MASCARA0v4]
             gateway4: $GATEWAY0v4
             nameservers:
-                addresses: [$DNS00, $DNS01, $DNS02, $DNS03]
+                addresses: [$IP0v4, $DNSEX0, $DNSEX1]
                 search: [$DOMINIO]
         $INTERFACE1:
             dhcp4: $DHCP1v4
@@ -78,7 +72,7 @@ network:
             addresses: [$IP1v4$MASCARA1v4]
             gateway4: $GATEWAY1v4
             nameservers:
-                addresses: [$DNS10, $DNS11, $DNS12, $DNS13]
+                addresses: [$IP1v4, $DNSEX0, $DNSEX1]
                 search: [$DOMINIO]
 #	" > /etc/netplan/01-netcfg.yaml
 	netplan --debug apply &>> $LOG
@@ -108,13 +102,12 @@ $IPv6			$FQDN	$NOME
 	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome interna ..."
 	sleep 1
 	
-#	Auterar servidor DNS (resolv.conf):
+#	Auterar resolução de nomes externa (resolv.conf):
 	printf "
 nameserver 127.0.0.53
+nameserver $IP0v4
 nameserver $DNS00
 nameserver $DNS01
-nameserver $DNS02
-nameserver $DNS03
 search thz.intra
 #	" > /etc/resolv.conf
 	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..."
@@ -257,7 +250,7 @@ aliases:    	nis [NOTFOUND=return] files
 #	Provisionar controlador de domínio do active directory:
 	systemctl stop samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	mv -v /etc/samba/smb.conf /etc/samba/smb.conf.bkp &>> $LOG
-	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSENCAMINHADO" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --option="interfaces = lo $INTERFACE" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
+	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSEX0" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --option="interfaces = lo $INTERFACE" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
 #	Configurar SAMBA4:
