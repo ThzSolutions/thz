@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #	Autor: Levi Barroso Menezes
-#	Data de criação: 24/03/2019
-#	Versão: 0.03
+#	Data de criação: 26/03/2019
+#	Versão: 0.08
 #	Samba4
 	
 #	Variável do servidor:
@@ -18,9 +18,6 @@
 	MASCARA0v4="/16"
 	GATEWAY0v4="172.20.0.1"
 	DHCP0v6="true"
-	IP0v6=""
-	MASCARA0v6=""
-	GATEWAY0v6=""
 	DNS00="172.20.0.10"
 	DNS01="4.4.8.8"
 	DNS02="8.8.4.4"
@@ -31,9 +28,6 @@
 	MASCARA1v4="/16"
 	GATEWAY1v4="10.10.0.1"
 	DHCP1v6="true"
-	IP1v6=""
-	MASCARA1v6=""
-	GATEWAY1v6=""
 	DNS10="8.8.8.8"
 	DNS11="4.4.8.8"
 	DNS12="8.8.4.4"
@@ -65,11 +59,9 @@
 
 #	Padronização:
 	bash base.sh
-#	export DEBIAN_FRONTEND="interactive"
-#	export DEBIAN_FRONTEND="noninteractive"
 
 #	Configurar interfaces de rede:
-	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
+	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp &>> $LOG
 	printf "
 network:
     version: 2
@@ -78,15 +70,15 @@ network:
         $INTERFACE0:
             dhcp4: $DHCP0v4
             dhcp6: $DHCP0v6
-            addresses: [$IPv4$MASCARA0v4, $IPv6$MASCARA0v6]
+            addresses: [$IPv4$MASCARA0v4]
             gateway4: $GATEWAY0v4
             nameservers:
                 addresses: [$DNS00, $DNS01, $DNS02, $DNS03]
                 search: [$DOMINIO]
-		$INTERFACE1:
+        $INTERFACE1:
             dhcp4: $DHCP1v4
             dhcp6: $DHCP1v6
-            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARA1v6]
+            addresses: [$IP1v4$MASCARA1v4]
             gateway4: $GATEWAY1v4
             nameservers:
                 addresses: [$DNS10, $DNS11, $DNS12, $DNS13]
@@ -96,8 +88,12 @@ network:
 	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
 	sleep 1
 
-#	Auterar nome do servidor (HOSTNAME):
+#	Auterar nome do servidor (hostname):
 	printf "$NOME" > /etc/hostname
+	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
+	sleep 1
+	
+#	Auterar resolução de nome interna (hosts):
 	printf "
 #IP versão 4
 127.0.0.1		localhost.localdomain	localhosta
@@ -112,26 +108,38 @@ ff02::3			ip6-allhosts
 $IPv6			$FQDN	$NOME
 
 #	" > /etc/hosts
-	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome interna ..."
+	sleep 1
+	
+#	Auterar servidor DNS (resolv.conf):
+	printf "
+nameserver 127.0.0.1
+nameserver $DNS00
+nameserver $DNS01
+nameserver $DNS02
+nameserver $DNS03
+search thz.intra
+#	" > /etc/hosts
+	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..."
 	sleep 1
 
 #	Instalar python
-	apt -y install python python-all-dev python-crypto python-dbg python-dev python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown python3-dev python-dnspython
+	apt -y install python python-all-dev python-crypto python-dbg python-dev python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown python3-dev python-dnspython &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
 	sleep 1
 
 #	Instalar perl
-	apt -y install perl perl-modules pkg-config libparse-yapp-perl libjson-perl
+	apt -y install perl perl-modules pkg-config libparse-yapp-perl libjson-perl &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
 	sleep 1
 
 #	Instalar recursos samba
-	apt -y install acl attr autoconf bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev
+	apt -y install acl attr autoconf bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Recursos samba ..."
 	sleep 1
 
 #	Instalar bibliotecas:	
-	apt -y install libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev
+	apt -y install libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..."
 	sleep 1
 
@@ -249,34 +257,19 @@ aliases:    	nis [NOTFOUND=return] files
 #	Provisionar controlador de domínio do active directory:
 	systemctl stop samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	mv -v /etc/samba/smb.conf /etc/samba/smb.conf.bkp &>> $LOG
-	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSENCAMINHADO" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO
-#	--host-ip=$IP \
-#	--option="interfaces = lo $INTERFACE" \
-#	--option="bind interfaces only = yes" 
-#	--option="allow dns updates = nonsecure and secure" \
-#	--option="winbind use default domain = yes" \
-#	--option="winbind enum users = yes" \
-#	--option="winbind enum groups = yes" \
-#	--option="winbind refresh tickets = yes" \
-#	--option="server signing = auto" \
-#	--option="vfs objects = acl_xattr" \
-#	--option="map acl inherit = yes" \
-#	--option="store dos attributes = yes" \
-#	--option="client use spnego = no" \
-#	--option="use spnego = no" \
-#	--option="client use spnego principal = no" &>> $LOG
+	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSENCAMINHADO" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --option="interfaces = lo $INTERFACE" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
 #	Configurar SAMBA4:
 	systemctl enable samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	systemctl restart samba-ad-dc.service smbd.service nmbd.service &>> $LOG
-#	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
-#	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
-#	systemctl unmask samba-ad-dc.service &>> $LOG
-#	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U Administrator%$SENHA &>> $LOG
-	samba-tool user setexpiry Administrator --noexpiry &>> $LOG
-	samba-tool dns zonecreate $DOMINIO $ARPA -U Administrator --password=$SENHA &>> $LOG
-	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U Administrator --password=$SENHA &>> $LOG
+	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
+	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
+	systemctl unmask samba-ad-dc.service &>> $LOG
+	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U $USUARIO%$SENHA &>> $LOG
+	samba-tool user setexpiry $USUARIO --noexpiry &>> $LOG
+	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
+	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração do Controlador de Domínio ..."
 	sleep 1
