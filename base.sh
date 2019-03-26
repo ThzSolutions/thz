@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #	Autor: Levi Barroso Menezes
-#	Data de criação: 26/03/2019
-#	Versão: 0.07
+#	Data de criação: 08/03/2019
+#	Versão: 0.01
 #	Ubuntu Server 18.04.x LTS x64
 #	Kernel Linux 4.15.x
 #	Pré instalação
@@ -51,7 +51,7 @@
 	sleep 1
 
 #	Verificar conexão com a internet:
-	ping -q -c2 -w1 google.com > /dev/null
+	ping -q -c2 -w1 br.archive.ubuntu.com > /dev/null
 	if [ $? -eq 0 ]
 		then
 			echo -e "[ \033[0;32m OK \033[0m ] Internet ..."
