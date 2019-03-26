@@ -63,8 +63,8 @@
 	sleep 1
 
 #	Adicionar programas basicos do sistema
-	apt -y -q update
-	apt -y -q install software-properties-common
+	apt -y update &>> $BASELOG
+	apt -y install software-properties-common &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Programas basicos do sistema ..."
 	sleep 1
 	
@@ -79,57 +79,57 @@
 	sleep 1
 
 #	Atualizar lista de repositórios:	
-	apt -y -q update &>> $BASELOG
+	apt -y update &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Atualização de repositórios ..."
 	sleep 1
 
 #	Atualizar sistema:	
-	apt -y -q upgrade &>> $BASELOG
+	apt -y upgrade &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Atualização do sistema ..."
 	sleep 1
 
 #	Remover pacotes desnecessários:	
-	apt -y -q autoremove &>> $BASELOG
+	apt -y autoremove &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Remoção de pacodes desnecessários ..."
 	sleep 1
 
 #	Instalar curl:	
-	apt -y -q install curl &>> $BASELOG
+	apt -y install curl &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Curl ..."
 	sleep 1
 
 #	Instalar gnupg:	
-	apt -y -q install gnupg gnupg1 gnupg2 &>> $BASELOG
+	apt -y install gnupg gnupg1 gnupg2 &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Gnupg ..."
 	sleep 1
 
 #	Instalar traceroute:	
-	apt -y -q install traceroute &>> $BASELOG
+	apt -y install traceroute &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Traceroute ..."
 	sleep 1
 #	Instalar ssh:	
-	apt -y -q install ssh &>> $BASELOG
+	apt -y install ssh &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] SSH ..."
 	sleep 1
 	
 #	Instalar aptitude:	
-	apt -y -q install aptitude &>> $BASELOG
+	apt -y install aptitude &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Aptitude ..."
 	sleep 1
 	
 #	Instalar htop:	
-	apt -y -q install htop &>> $BASELOG
+	apt -y install htop &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Htop ..."
 	sleep 1
 	
 #	Instalar NTP:
-	apt -y -q install ntp ntpdate &>> $BASELOG
+	apt -y install ntp ntpdate &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] NTP ..."
 
 #	Configurar NTP:
 	printf "0.0" > /var/lib/ntp/ntp.drift
-	chown -v ntp.ntp /var/lib/ntp/ntp.drift &>> $BASELOG
-	mv -v /etc/ntp.conf /etc/ntp.conf.bkp &>> $BASELOG
+	chown ntp.ntp /var/lib/ntp/ntp.drift
+	mv /etc/ntp.conf /etc/ntp.conf.bkp
 	printf "
 driftfile /var/lib/ntp/ntp.drift
 
