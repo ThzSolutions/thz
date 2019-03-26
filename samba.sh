@@ -4,7 +4,8 @@
 #	Data de criação: 24/03/2019
 #	Versão: 0.03
 #	Samba4
-
+	echo " \033[0;32m Não se preocupe só termina quando acaba !!! \033[0m"
+	
 #	Variável do servidor:
 	NOME="samba001"
 	DOMINIO="thz.intra"
@@ -52,8 +53,29 @@
 
 #	Padronização:
 	bash base.sh
-	export DEBIAN_FRONTEND="noninteractive"
-	
+#	export DEBIAN_FRONTEND="interactive"
+#	export DEBIAN_FRONTEND="noninteractive"
+
+#	Configurar interfaces de rede:
+	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
+	printf "
+network:
+    version: 2
+    renderer: networkd
+    ethernets:
+        $INTERFACE:
+            dhcp4: $DHCPv4
+            dhcp6: $DHCPv6
+            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARAv6]
+            gateway4: $GATEWAYv4
+            nameservers:
+                addresses: [$DNS0, $DNS1, $DNS2, $DNS3]
+                search: [$DOMINIO]
+#	" > /etc/netplan/01-netcfg.yaml
+	netplan --debug apply &>> $LOG
+	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
+	sleep 1
+
 #	Auterar nome do servidor (HOSTNAME):
 	printf "$NOME" > /etc/hostname
 	printf "
@@ -73,35 +95,30 @@ $IPv6		$FQDN	$NOME
 	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
 	sleep 1
 
-#	Instalar Python
-#	apt -y -q install python-all-dev python-dev python-crypto python-dbg python-dev python-dnspython \
-#	python3-dnspython python-markdown python3-markdown \
-#	python3-dev
-#	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
-#	sleep 1
-
-#	Instalar Perl
-#	apt -y -q install perl perl-modules 
-#	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
-#	sleep 1
-
-#	Instalar Utilitários
-	apt -y -q install acl attr cifs-utils winbind dnsutils debconf-utils lmdb-utils
-#	bind9utils bison build-essential debhelper\
-#	docbook-xml docbook-xsl unzip autoconf\
-#	flex gdb xsltproc figlet \
-#	traceroute ldb-tools \
-#	kcc tree
-	echo -e "[ \033[0;32m OK \033[0m ] Utilitários ..."
+#	Instalar python
+	apt -y install python-all-dev python-crypto python-dbg python-dev \
+	python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown \
+	python3-dev python-dnspython
+	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
 	sleep 1
 
-#	Instalar Bibliotecas:	
-#	apt -y -q install libacl1-dev libaio-dev libarchive-dev libattr1-dev libblkid-dev \
-#	libparse-yapp-perl libdap2-dev libncurses5-dev libgnutls28-dev libpam-winbind \
-#	libgpgme-dev libjson-perl libpam0g-dev libnss-winbind libldap2-dev \
-#	libbsd-dev libjansson-dev libcap-dev libcups2-dev \
-#	libpopt-dev libreadline-dev liblmdb-dev nettle-dev pkg-config \
-#	zlib1g-dev \
+#	Instalar perl
+	apt -y install perl perl-modules pkg-config libparse-yapp-perl libjson-perl
+	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
+	sleep 1
+
+#	Instalar recursos samba
+	apt -y install acl attr autoconf bind9utils bison build-essential \
+	debhelper dnsutils docbook-xml docbook-xsl flex gdb \
+	xsltproc lmdb-utils libjansson-dev
+	echo -e "[ \033[0;32m OK \033[0m ] Recursos samba ..."
+	sleep 1
+
+#	Instalar bibliotecas:	
+	apt -y install libacl1-dev libaio-dev libarchive-dev libattr1-dev \
+	libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev \
+	libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev \
+	libblkid-dev libbsd-dev
 	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..."
 	sleep 1
 
@@ -113,7 +130,7 @@ $IPv6		$FQDN	$NOME
 	echo "krb5-config krb5-config/add_servers boolean true" | debconf-set-selections
 	echo "krb5-config krb5-config/read_config boolean true" | debconf-set-selections
 	debconf-show krb5-config &>> $LOG
-	apt -y -q install krb5-user krb5-config &>> $LOG
+	apt -y install krb5-user krb5-config &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Kerberos ..."
 	sleep 1
 
@@ -252,32 +269,12 @@ aliases:    	nis [NOTFOUND=return] files
 #	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
 #	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
 #	systemctl unmask samba-ad-dc.service &>> $LOG
-	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U Administrator%$SENHA &>> $LOG
+#	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U Administrator%$SENHA &>> $LOG
 	samba-tool user setexpiry Administrator --noexpiry &>> $LOG
 	samba-tool dns zonecreate $DOMINIO $ARPA -U Administrator --password=$SENHA &>> $LOG
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U Administrator --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do Controlador de Domínio ..."
-	sleep 1
-	
-#	Configurar interfaces de rede:
-	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
-	printf "
-network:
-    version: 2
-    renderer: networkd
-    ethernets:
-        $INTERFACE:
-            dhcp4: $DHCPv4
-            dhcp6: $DHCPv6
-            addresses: [$IPv4$MASCARAv4, $IPv6$MASCARAv6]
-            gateway4: $GATEWAYv4
-            nameservers:
-                addresses: [$DNS0, $DNS1, $DNS2, $DNS3]
-                search: [$DOMINIO]
-#	" > /etc/netplan/01-netcfg.yaml
-	netplan --debug apply &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Configuração do Controlador de Domínio ..."
 	sleep 1
 
 #	Finalizar
