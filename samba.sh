@@ -3,7 +3,7 @@
 #	Autor: Levi Barroso Menezes
 #	Data de criação: 26/03/2019
 #	Versão: 0.08
-#	Samba4
+#	Samba
 	
 #	Variável do servidor:
 	NOME="samba001"
@@ -25,7 +25,7 @@
 	INTERFACE1="enp0s8"
 	DHCP1v4="true"
 	IP1v4="10.0.0.17"
-	MASCARA1v4="/16"
+	MASCARA1v4="/8"
 	GATEWAY1v4="10.10.0.1"
 	DHCP1v6="true"
 	DNS10="8.8.8.8"
@@ -57,9 +57,6 @@
 #	Registrar inicio dos processos:
 	echo -e "Início do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 
-#	Padronização:
-	bash base.sh
-
 #	Configurar interfaces de rede:
 	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp &>> $LOG
 	printf "
@@ -70,7 +67,7 @@ network:
         $INTERFACE0:
             dhcp4: $DHCP0v4
             dhcp6: $DHCP0v6
-            addresses: [$IPv4$MASCARA0v4]
+            addresses: [$IP0v4$MASCARA0v4]
             gateway4: $GATEWAY0v4
             nameservers:
                 addresses: [$DNS00, $DNS01, $DNS02, $DNS03]
@@ -119,12 +116,15 @@ nameserver $DNS01
 nameserver $DNS02
 nameserver $DNS03
 search thz.intra
-#	" > /etc/hosts
+#	" > /etc/resolv.conf
 	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..."
 	sleep 1
 
+#	Padronização:
+	bash base.sh
+
 #	Instalar python
-	apt -y install python python-all-dev python-crypto python-dbg python-dev python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown python3-dev python-dnspython &>> $LOG
+	apt -y install python-all-dev python-crypto python-dbg python-dev python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown python3-dev python-dnspython &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
 	sleep 1
 
