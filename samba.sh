@@ -110,7 +110,7 @@ $IPv6			$FQDN	$NOME
 	
 #	Auterar servidor DNS (resolv.conf):
 	printf "
-nameserver 127.0.0.1
+nameserver 127.0.0.53
 nameserver $DNS00
 nameserver $DNS01
 nameserver $DNS02
