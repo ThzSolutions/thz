@@ -62,6 +62,12 @@
 	fi
 	sleep 1
 
+#	Adicionar programas basicos do sistema
+	apt -y -q update
+	apt -y -q install software-properties-common
+	echo -e "[ \033[0;32m OK \033[0m ] Programas basicos do sistema ..."
+	sleep 1
+	
 #	Adicionar o repositório universal:	
 	add-apt-repository universe &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Repositório universal ..."
@@ -153,7 +159,6 @@ restrict -6 default kod notrap nomodify nopeer noquery
 #	" > /etc/ntp.conf
 	timedatectl set-timezone "$ZONA"
 	ntpdate -dquv $NTP
-	systemctl enable ntp.service
 	systemctl restart ntp.service
 	hwclock --systohc
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração NTP ..."
