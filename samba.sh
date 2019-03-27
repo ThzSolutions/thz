@@ -49,10 +49,11 @@
 	export DEBIAN_FRONTEND="noninteractive"
 
 #	Registrar inicio dos processos:
+	rm $LOG
 	echo -e "Início do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 
 #	Configurar interfaces de rede:
-	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp &>> $LOG
+	mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
 	printf "
 network:
     version: 2
@@ -76,13 +77,13 @@ network:
                 search: [$DOMINIO]
 #	" > /etc/netplan/01-netcfg.yaml
 	netplan --debug apply &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..." &>> $LOG
 	sleep 1
 
 #	Auterar nome do servidor (hostname):
 	rm /etc/hostname
 	printf "$NOME" > /etc/hostname
-	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..." &>> $LOG
 	sleep 1
 	
 #	Auterar resolução de nome interna (hosts):
@@ -102,7 +103,7 @@ ff02::3			ip6-allhosts
 $IP0v6			$FQDN	$NOME
 
 #	" > /etc/hosts
-	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome interna ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome interna ..." &>> $LOG
 	sleep 1
 	
 #	Auterar resolução de nomes externa (resolv.conf):
@@ -114,7 +115,7 @@ nameserver $DNSEX0
 nameserver $DNSEX1
 search thz.intra
 #	" > /etc/resolv.conf
-	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..." &>> $LOG
 	sleep 1
 
 #	Padronização:
@@ -122,22 +123,22 @@ search thz.intra
 
 #	Instalar python
 	apt -y -q install python-all-dev python-crypto python-dbg python-dev python-dnspython python3-dnspython python-gpg e python3-gpg python-markdown python3-markdown python3-dev &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Python ..." &>> $LOG
 	sleep 1
 
 #	Instalar perl
 	apt -y -q install perl perl-modules pkg-config libparse-yapp-perl libjson-perl &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Perl ..." &>> $LOG
 	sleep 1
 
 #	Instalar recursos usados pelo samba
-	apt -y -q install acl attr autoconf bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Recursos usados pelo samba ..."
+	apt -y -q install acl attr autoconf figlet debconf-utils bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev &>> $LOG
+	echo -e "[ \033[0;32m OK \033[0m ] Recursos usados pelo samba ..." &>> $LOG
 	sleep 1
 
 #	Instalar bibliotecas:	
 	apt -y -q install libsystemd-dev libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..." &>> $LOG
 	sleep 1
 
 #	Instalar e configurar kerberos:
@@ -149,7 +150,7 @@ search thz.intra
 	echo "krb5-config krb5-config/read_config boolean true" | debconf-set-selections
 	debconf-show krb5-config &>> $LOG
 	apt -y -q install krb5-user krb5-config &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Kerberos ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Kerberos ..." &>> $LOG
 	sleep 1
 
 #	Configurar kerberos:
@@ -210,11 +211,11 @@ search thz.intra
 	kdc = FILE:/var/krb5/krb5kdc.log 
 	admin_server = FILE:/var/log/krb5admin.log
 	" > /etc/krb5.conf
-	echo -e "[ \033[0;32m OK \033[0m ] Configuração kerberos ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Configuração kerberos ..." &>> $LOG
 	sleep 1
 
 #	Configurar ponte nsswitch:
-	mv -v /etc/nsswitch.conf /etc/nsswitch.conf.bkp &>> $LOG
+	mv -v /etc/nsswitch.conf /etc/nsswitch.conf.bkp
 	printf "
 #	Habilitar os recursos de files (arquivos) e winbind (integração) SAMBA+GNU/Linux
 passwd:         files compat systemd winbind
@@ -243,19 +244,19 @@ publickey:  	nis [NOTFOUND=return] files
 automount:  	files
 aliases:    	nis [NOTFOUND=return] files
 	" > /etc/nsswitch.conf
-	echo -e "[ \033[0;32m OK \033[0m ] Nsswitch ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Nsswitch ..." &>> $LOG
 	sleep 1
 
 #	Instalar SAMBA4:
 	apt -y -q install samba samba-common smbclient samba-vfs-modules samba-testsuite samba-dsdb-modules &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Samba4 ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Samba4 ..." &>> $LOG
 	sleep 1
 
 #	Provisionar controlador de domínio do active directory:
 	systemctl stop samba-ad-dc.service smbd.service nmbd.service &>> $LOG
-	mv -v /etc/samba/smb.conf /etc/samba/smb.conf.bkp &>> $LOG
+	mv -v /etc/samba/smb.conf /etc/samba/smb.conf.bkp
 	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSEX0" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --option="interfaces = lo $INTERFACE" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..." &>> $LOG
 	
 #	Configurar SAMBA4:
 	systemctl unmask samba-ad-dc.service &>> $LOG
@@ -268,7 +269,7 @@ aliases:    	nis [NOTFOUND=return] files
 	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Configuração do Controlador de Domínio ..."
+	echo -e "[ \033[0;32m OK \033[0m ] Configuração do Controlador de Domínio ..." &>> $LOG
 	sleep 1
 
 #	Finalizar
@@ -279,7 +280,7 @@ aliases:    	nis [NOTFOUND=return] files
 	echo -e "Tempo de execução $0: $TEMPO"
 	echo -e "Fim do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 	echo -e "Acesso ao banco de dados: $IP:5432"
-	echo -e "\033[0;31m Pode ser nescesario reiniciar o servidor !!! \033[0m"
+	echo -e "\033[0;31m Pode ser nescesario reiniciar o servidor !!! \033[0m" &>> $LOG
 	echo -e "Pressione \033[0;32m <Enter> \033[0m para reiniciar ou \033[0;33m <CTRL> + C \033[0m para finalizar o processo."
 	read
 	reboot 0
