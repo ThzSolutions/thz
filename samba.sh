@@ -13,13 +13,13 @@
 
 #	Variáveis de Rede
 	INTERFACE0="enp0s3"
-	DHCP0v4="true"
+	DHCP0v4="false"
 	IP0v4="172.20.0.10"
 	MASCARA0v4="/16"
 	GATEWAY0v4="172.20.0.1"
 	DHCP0v6="true"
 	INTERFACE1="enp0s8"
-	DHCP1v4="true"
+	DHCP1v4="false"
 	IP1v4="10.0.0.17"
 	MASCARA1v4="/8"
 	GATEWAY1v4="10.10.0.1"
@@ -33,7 +33,7 @@
 
 #	Variáveis do Samba
 	USUARIO="Supremo"
-	SENHA="ASD!@#456"
+	SENHA="P@ssword"
 	REINO="THZ.INTRA"
 	DNSBE="SAMBA_INTERNAL"
 	REGRA="dc"
