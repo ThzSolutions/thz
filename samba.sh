@@ -8,7 +8,6 @@
 #	Variável do servidor:
 	NOME="smb01"
 	DOMINIO="thz.intra"
-	ZONA="America/Fortaleza"
 	FQDN="$NOME.$DOMINIO"
 
 #	Variáveis de Rede
@@ -38,7 +37,7 @@
 	DNSBE="SAMBA_INTERNAL"
 	REGRA="dc"
 	LEVEL="2008_R2"
-	SMBDOMINIO="thz"
+	SMBDOMINIO="THZ"
 	DNSENCAMINHADO="8.8.8.8"
 
 #	Variaáveis do DNS
@@ -49,7 +48,7 @@
 	export DEBIAN_FRONTEND="noninteractive"
 
 #	Registrar inicio dos processos:
-	rm $LOG
+	rm $LOG &> $LOG
 	echo -e "Início do script $0 em: `date +%d/%m/%Y-"("%H:%M")"`\n" &>> $LOG
 
 #	Configurar interfaces de rede:
@@ -109,11 +108,11 @@ $IP0v6			$FQDN	$NOME
 #	Auterar resolução de nomes externa (resolv.conf):
 	rm /etc/resolv.conf
 	printf "
-nameserver 127.0.0.53
 nameserver $IP0v4
-nameserver $DNSEX0
-nameserver $DNSEX1
-search thz.intra
+nameserver 127.0.0.53
+search $DOMINIO
+domain $DOMINIO
+options edns0
 #	" > /etc/resolv.conf
 	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..."
 	sleep 1
@@ -131,10 +130,15 @@ search thz.intra
 	apt -y -q install perl perl-modules libparse-yapp-perl libjson-perl &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
 	sleep 1
+	
+#	Instalar winbind
+	apt -y -q install winbind libnss-winbind libpam-winbind &>> $LOG
+	echo -e "[ \033[0;32m OK \033[0m ] Winbind ..."
+	sleep 1
 
 #	Instalar recursos usados pelo samba
 #	apt -y -q install acl attr autoconf figlet debconf-utils bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev &>> $LOG
-	apt -y -q install acl attr figlet debconf-utils build-essential gdb pkg-config docbook-xsl dnsutils &>> $LOG
+	apt -y -q install acl attr figlet debconf-utils build-essential gdb pkg-config docbook-xsl dnsutils ldb-tools unzip kcc tree &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Recursos usados pelo samba ..."
 	sleep 1
 
@@ -159,7 +163,7 @@ search thz.intra
 #	Configurar kerberos:
 	printf "
 [libdefaults]
-	# Realm padrão
+# 	Realm padrão
 	default_realm = $REINO
  
 #	Opções utilizadas pela SAMBA4
@@ -218,7 +222,7 @@ search thz.intra
 	sleep 1
 
 #	Configurar ponte nsswitch:
-	mv -v /etc/nsswitch.conf /etc/nsswitch.conf.bkp
+	mv /etc/nsswitch.conf /etc/nsswitch.conf.bkp
 	printf "
 #	Habilitar os recursos de files (arquivos) e winbind (integração) SAMBA+GNU/Linux
 passwd:         files compat systemd winbind
@@ -232,7 +236,7 @@ shadow_compat:	nis
 
 #	Configuração de resolução de nomes
 #	Habilitar o recursos de dns depois de files (arquivo hosts)
-hosts:          nis [NOTFOUND=return] files dns dns mdns4_minimal [NOTFOUND=return]
+hosts:          nis [NOTFOUND=return] files	dns	mdns4_minimal [NOTFOUND=return]
 
 #	Configurações padrão.
 services:   	nis [NOTFOUND=return] files
@@ -251,15 +255,16 @@ aliases:    	nis [NOTFOUND=return] files
 	sleep 1
 
 #	Instalar SAMBA4:
-	apt -y -q install samba samba-common smbclient samba-vfs-modules samba-testsuite samba-dsdb-modules &>> $LOG
+#	apt -y -q install samba samba-common smbclient samba-vfs-modules samba-testsuite samba-dsdb-modules &>> $LOG
+	apt -y -q install samba samba-common smbclient samba-testsuite &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Samba4 ..."
 	sleep 1
 
 #	Provisionar controlador de domínio do active directory:
 	systemctl stop samba-ad-dc.service smbd.service nmbd.service &>> $LOG
-	mv -v /etc/samba/smb.conf /etc/samba/smb.conf.bkp
+	mv /etc/samba/smb.conf /etc/samba/smb.conf.bkp
 	sleep 1
-	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSEX0" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --option="interfaces = lo $INTERFACE" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
+	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --dns-backend=$DNSBE --option="dns forwarder = $DNSENCAMINHADO" --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --use-rfc2307 --option="interfaces = lo $INTERFACE0" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
 #	Configurar SAMBA4:
@@ -268,14 +273,15 @@ aliases:    	nis [NOTFOUND=return] files
 	systemctl restart samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
 	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
-	samba-tool user create $USUARIO
+	samba-tool user create $USUARIO P@ssword --rfc2307-from-nss
 	samba-tool user setpassword $USUARIO --newpassword==$SENHA
 	samba-tool group addmembers administrators "$USUARIO"
 	samba-tool user setexpiry $USUARIO --noexpiry &>> $LOG
-	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
-	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
-	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
+	samba-tool dns zonecreate $FQDN $ARPA -U Administrator --password=$SENHA &>> $LOG
+	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U Administrator --password=$SENHA &>> $LOG
+	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --all-names &>> $LOG
 	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U $USUARIO%$SENHA &>> $LOG
+	samba-tool dbcheck --cross-ncs --fix --yes
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração do Controlador de Domínio ..."
 	sleep 1
 
