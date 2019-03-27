@@ -51,7 +51,8 @@
 	sleep 1
 
 #	Verificar conexão com a internet:
-	ping -q -c2 -w1 br.archive.ubuntu.com > /dev/null
+#	ping -q -c2 -w1 br.archive.ubuntu.com > /dev/null
+	traceroute br.archive.ubuntu.com > /dev/null
 	if [ $? -eq 0 ]
 		then
 			echo -e "[ \033[0;32m OK \033[0m ] Internet ..."
