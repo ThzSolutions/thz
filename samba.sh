@@ -80,15 +80,18 @@ network:
 	sleep 1
 
 #	Auterar nome do servidor (hostname):
+	rm /etc/hostname
 	printf "$NOME" > /etc/hostname
 	echo -e "[ \033[0;32m OK \033[0m ] Nome do servidor ..."
 	sleep 1
 	
 #	Auterar resolução de nome interna (hosts):
+	rm /etc/hosts
 	printf "
 #IP versão 4
 127.0.0.1		localhost.localdomain	localhosta
-$IPv4			$FQDN	$NOME
+127.0.0.1		$FQDN	$NOME
+$IP0v4			$FQDN	$NOME
 
 #IP versão 6
 ::1				localhost	ip6-localhost	ip6-loopback
@@ -96,18 +99,19 @@ fe00::0			ip6-localnet
 ff02::1			ip6-allnodes
 ff02::2			ip6-allrouters
 ff02::3			ip6-allhosts
-$IPv6			$FQDN	$NOME
+$IP0v6			$FQDN	$NOME
 
 #	" > /etc/hosts
 	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome interna ..."
 	sleep 1
 	
 #	Auterar resolução de nomes externa (resolv.conf):
+	rm /etc/resolv.conf
 	printf "
 nameserver 127.0.0.53
 nameserver $IP0v4
-nameserver $DNS00
-nameserver $DNS01
+nameserver $DNSEX0
+nameserver $DNSEX1
 search thz.intra
 #	" > /etc/resolv.conf
 	echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..."
@@ -117,22 +121,22 @@ search thz.intra
 	bash base.sh
 
 #	Instalar python
-	apt -y install python-all-dev python-crypto python-dbg python-dev python3-dnspython python-gpgme python3-gpgme python-markdown python3-markdown python3-dev python-dnspython &>> $LOG
+	apt -y -q install python-all-dev python-crypto python-dbg python-dev python-dnspython python3-dnspython python-gpg e python3-gpg python-markdown python3-markdown python3-dev &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
 	sleep 1
 
 #	Instalar perl
-	apt -y install perl perl-modules pkg-config libparse-yapp-perl libjson-perl &>> $LOG
+	apt -y -q install perl perl-modules pkg-config libparse-yapp-perl libjson-perl &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
 	sleep 1
 
-#	Instalar recursos samba
-	apt -y install acl attr autoconf bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev &>> $LOG
-	echo -e "[ \033[0;32m OK \033[0m ] Recursos samba ..."
+#	Instalar recursos usados pelo samba
+	apt -y -q install acl attr autoconf bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev &>> $LOG
+	echo -e "[ \033[0;32m OK \033[0m ] Recursos usados pelo samba ..."
 	sleep 1
 
 #	Instalar bibliotecas:	
-	apt -y install libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev &>> $LOG
+	apt -y -q install libsystemd-dev libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..."
 	sleep 1
 
@@ -144,7 +148,7 @@ search thz.intra
 	echo "krb5-config krb5-config/add_servers boolean true" | debconf-set-selections
 	echo "krb5-config krb5-config/read_config boolean true" | debconf-set-selections
 	debconf-show krb5-config &>> $LOG
-	apt -y install krb5-user krb5-config &>> $LOG
+	apt -y -q install krb5-user krb5-config &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Kerberos ..."
 	sleep 1
 
@@ -243,7 +247,7 @@ aliases:    	nis [NOTFOUND=return] files
 	sleep 1
 
 #	Instalar SAMBA4:
-	apt -y install samba samba-common smbclient samba-vfs-modules samba-testsuite samba-dsdb-modules &>> $LOG
+	apt -y -q install samba samba-common smbclient samba-vfs-modules samba-testsuite samba-dsdb-modules &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Samba4 ..."
 	sleep 1
 
@@ -254,11 +258,11 @@ aliases:    	nis [NOTFOUND=return] files
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
 #	Configurar SAMBA4:
+	systemctl unmask samba-ad-dc.service &>> $LOG
 	systemctl enable samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	systemctl restart samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
 	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
-	systemctl unmask samba-ad-dc.service &>> $LOG
 	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U $USUARIO%$SENHA &>> $LOG
 	samba-tool user setexpiry $USUARIO --noexpiry &>> $LOG
 	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
