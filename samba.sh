@@ -128,7 +128,7 @@ search thz.intra
 	sleep 1
 
 #	Instalar perl
-	apt -y -q install perl perl-modules pkg-config libparse-yapp-perl libjson-perl &>> $LOG
+	apt -y -q install perl perl-modules libparse-yapp-perl libjson-perl &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Perl ..."
 	sleep 1
 
@@ -258,6 +258,7 @@ aliases:    	nis [NOTFOUND=return] files
 #	Provisionar controlador de domínio do active directory:
 	systemctl stop samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	mv -v /etc/samba/smb.conf /etc/samba/smb.conf.bkp
+	sleep 1
 	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --option="dns forwarder = $DNSEX0" --dns-backend=$DNSBE --use-rfc2307 --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --option="interfaces = lo $INTERFACE" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
@@ -267,11 +268,14 @@ aliases:    	nis [NOTFOUND=return] files
 	systemctl restart samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
 	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
-	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U $USUARIO%$SENHA &>> $LOG
+	samba-tool user create $USUARIO
+	samba-tool user setpassword $USUARIO --newpassword==$SENHA
+	samba-tool group addmembers administrators "$USUARIO"
 	samba-tool user setexpiry $USUARIO --noexpiry &>> $LOG
 	samba-tool dns zonecreate $DOMINIO $ARPA -U $USUARIO --password=$SENHA &>> $LOG
 	samba-tool dns add $DOMINIO $ARPA $ARPAIP PTR $FQDN -U $USUARIO --password=$SENHA &>> $LOG
 	samba_dnsupdate --use-file=/var/lib/samba/private/dns.keytab --verbose --all-names &>> $LOG
+	net rpc rights grant '$SMBDOMINIO\Domain Admins' SeDiskOperatorPrivilege -U $USUARIO%$SENHA &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração do Controlador de Domínio ..."
 	sleep 1
 
