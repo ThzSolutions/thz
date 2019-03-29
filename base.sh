@@ -7,7 +7,7 @@
 #	Kernel Linux 4.15.x
 #	Pré instalação
 
-#	Verificar permissões de usuário:
+#	Verificações:
 	USER=`id -u`
 	UBUNTU=`lsb_release -rs`
 	KERNEL=`uname -r | cut -d'.' -f1,2`
@@ -51,7 +51,7 @@
 	sleep 1
 
 #	Verificar conexão com a internet:
-#	ping -q -c2 -w1 br.archive.ubuntu.com > /dev/null
+#	ping -q -c1 -w1 br.archive.ubuntu.com > /dev/null
 	traceroute br.archive.ubuntu.com > /dev/null
 	if [ $? -eq 0 ]
 		then
@@ -64,8 +64,8 @@
 	sleep 1
 
 #	Adicionar programas basicos do sistema
-	apt -y update &>> $BASELOG
-	apt -y install software-properties-common &>> $BASELOG
+	apt -y -q update &>> $BASELOG
+	apt -y -q install software-properties-common &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Programas basicos do sistema ..."
 	sleep 1
 	
@@ -80,56 +80,22 @@
 	sleep 1
 
 #	Atualizar lista de repositórios:	
-	apt -y update &>> $BASELOG
+	apt -y -q update &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Atualização de repositórios ..."
 	sleep 1
 
 #	Atualizar sistema:	
-	apt -y upgrade &>> $BASELOG
+	apt -y -q upgrade &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Atualização do sistema ..."
 	sleep 1
 
 #	Remover pacotes desnecessários:	
-	apt -y autoremove &>> $BASELOG
+	apt -y -q autoremove &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Remoção de pacodes desnecessários ..."
-	sleep 1
-
-#	Instalar curl:	
-	apt -y install curl &>> $BASELOG
-	echo -e "[ \033[0;32m OK \033[0m ] Curl ..."
-	sleep 1
-
-#	Instalar gnupg:	
-	apt -y install gnupg gnupg1 gnupg2 &>> $BASELOG
-	echo -e "[ \033[0;32m OK \033[0m ] Gnupg ..."
-	sleep 1
-
-#	Instalar traceroute:	
-	apt -y install traceroute &>> $BASELOG
-	echo -e "[ \033[0;32m OK \033[0m ] Traceroute ..."
-	sleep 1
-#	Instalar ssh:	
-	apt -y install ssh &>> $BASELOG
-	echo -e "[ \033[0;32m OK \033[0m ] SSH ..."
-	sleep 1
-	
-#	Instalar aptitude:	
-	apt -y install aptitude &>> $BASELOG
-	echo -e "[ \033[0;32m OK \033[0m ] Aptitude ..."
-	sleep 1
-	
-#	Instalar htop:	
-	apt -y install htop &>> $BASELOG
-	echo -e "[ \033[0;32m OK \033[0m ] Htop ..."
-	sleep 1
-	
-#	Instalar git:	
-	apt -y install git &>> $BASELOG
-	echo -e "[ \033[0;32m OK \033[0m ] Git ..."
 	sleep 1
 	
 #	Instalar NTP:
-	apt -y install ntp ntpdate &>> $BASELOG
+	apt -y -q install ntp ntpdate &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] NTP ..."
 
 #	Configurar NTP:
@@ -166,7 +132,7 @@ restrict -6 default kod notrap nomodify nopeer noquery
 	sleep 1
 	timedatectl set-timezone "$ZONA"
 	sleep 1
-	ntpdate -dquv $NTP
+	ntpdate -dquv $SERVIDORNTP0
 	sleep 1
 	systemctl restart ntp.service
 	sleep 1
