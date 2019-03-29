@@ -89,7 +89,7 @@ network:
 	rm /etc/hosts
 	printf "
 #IP versão 4
-127.0.0.1		localhost.localdomain	localhosta
+127.0.0.1		localhost.localdomain	localhost
 127.0.0.1		$FQDN	$NOME
 $IP0v4			$FQDN	$NOME
 
@@ -121,8 +121,8 @@ options edns0
 	bash base.sh
 
 #	Instalar python
-#	apt -y -q install python-all-dev python-crypto python-dbg python-dev python-dnspython python3-dnspython python-gpg e python3-gpg python-markdown python3-markdown python3-dev &>> $LOG
-	apt -y -q install python-dev  python-dnspython &>> $LOG
+	apt -y -q install python-all-dev python-crypto python-dbg python-dev python-dnspython python3-dnspython python-gpg e python3-gpg python-markdown python3-markdown python3-dev &>> $LOG
+#	apt -y -q install python-dev  python-dnspython &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Python ..."
 	sleep 1
 
@@ -137,14 +137,14 @@ options edns0
 	sleep 1
 
 #	Instalar recursos usados pelo samba
-#	apt -y -q install acl attr autoconf figlet debconf-utils bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils libjansson-dev &>> $LOG
-	apt -y -q install acl attr figlet debconf-utils build-essential gdb pkg-config docbook-xsl dnsutils ldb-tools unzip kcc tree &>> $LOG
+	apt -y -q install acl attr autoconf figlet debconf-utils bind9utils bison build-essential debhelper dnsutils docbook-xml docbook-xsl flex gdb xsltproc lmdb-utils pkg-config ldb-tools unzip kcc tree&>> $LOG
+#	apt -y -q install acl attr figlet debconf-utils build-essential gdb pkg-config docbook-xsl dnsutils ldb-tools unzip kcc tree &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Recursos usados pelo samba ..."
 	sleep 1
 
 #	Instalar bibliotecas:	
-#	apt -y -q install libsystemd-dev libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev libjansson-dev &>> $LOG
-	apt -y -q install libpam0g-dev libacl1-dev libattr1-dev libblkid-dev libgnutls28-dev libreadline-dev libpopt-dev libldap2-dev libbsd-dev &>> $LOG
+	apt -y -q install libsystemd-dev libacl1-dev libaio-dev libarchive-dev libattr1-dev libcap-dev libcups2-dev libgnutls28-dev libgpgme-dev zlib1g-dev liblmdb-dev libjansson-dev libldap2-dev libncurses5-dev libpam0g-dev libpopt-dev libreadline-dev nettle-dev libblkid-dev libbsd-dev libjansson-dev &>> $LOG
+#	apt -y -q install libpam0g-dev libacl1-dev libattr1-dev libblkid-dev libgnutls28-dev libreadline-dev libpopt-dev libldap2-dev libbsd-dev &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Bibliotécas ..."
 	sleep 1
 
@@ -239,42 +239,101 @@ shadow_compat:	nis
 hosts:          nis [NOTFOUND=return] files	dns	mdns4_minimal [NOTFOUND=return]
 
 #	Configurações padrão.
-services:   	nis [NOTFOUND=return] files
-networks:   	nis [NOTFOUND=return] files
-protocols:  	nis [NOTFOUND=return] files
-rpc:        	nis [NOTFOUND=return] files
-ethers:     	nis [NOTFOUND=return] files
-netmasks:   	nis [NOTFOUND=return] files
-netgroup:   	nis
-bootparams: 	nis [NOTFOUND=return] files
-publickey:  	nis [NOTFOUND=return] files
+services:   	nis 	[NOTFOUND=return] files
+networks:   	nis 	[NOTFOUND=return] files
+protocols:  	nis 	[NOTFOUND=return] files
+rpc:        	nis 	[NOTFOUND=return] files
+ethers:     	nis 	[NOTFOUND=return] files
+netmasks:   	nis 	[NOTFOUND=return] files
+netgroup:   	nis 	[NOTFOUND=return] files
+bootparams: 	nis 	[NOTFOUND=return] files
+publickey:  	nis 	[NOTFOUND=return] files
 automount:  	files
-aliases:    	nis [NOTFOUND=return] files
+aliases:    	nis 	[NOTFOUND=return] files
 	" > /etc/nsswitch.conf
 	echo -e "[ \033[0;32m OK \033[0m ] Nsswitch ..."
 	sleep 1
 
 #	Instalar SAMBA4:
-#	apt -y -q install samba samba-common smbclient samba-vfs-modules samba-testsuite samba-dsdb-modules &>> $LOG
+	apt -y -q install samba samba-common smbclient samba-vfs-modules samba-testsuite samba-dsdb-modules &>> $LOG
 	apt -y -q install samba samba-common smbclient samba-testsuite &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Samba4 ..."
 	sleep 1
 
 #	Provisionar controlador de domínio do active directory:
 	systemctl stop samba-ad-dc.service smbd.service nmbd.service &>> $LOG
-	mv /etc/samba/smb.conf /etc/samba/smb.conf.bkp
+	mv /etc/samba/smb.conf /etc/samba/smb.conf.old
 	sleep 1
-	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --dns-backend=$DNSBE --option="dns forwarder = $DNSENCAMINHADO" --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --use-rfc2307 --option="interfaces = lo $INTERFACE0" --option="bind interfaces only = yes" --option="allow dns updates = nonsecure and secure" --option="winbind use default domain = yes" --option="winbind enum users = yes" --option="winbind enum groups = yes" --option="winbind refresh tickets = yes" --option="server signing = auto" --option="vfs objects = acl_xattr" --option="map acl inherit = yes" --option="store dos attributes = yes" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
+	samba-tool domain provision --realm=$REINO --domain=$SMBDOMINIO --server-role=$REGRA --dns-backend=$DNSBE --option="dns forwarder = $DNSENCAMINHADO" --adminpass=$SENHA --function-level=$LEVEL --site=$REINO --host-ip=$IP --use-rfc2307 --option="server signing = auto" --option="client use spnego = no" --option="use spnego = no" --option="client use spnego principal = no" &>> $LOG
 	echo -e "[ \033[0;32m OK \033[0m ] Provisionamento do controlador de domínio ..."
 	
 #	Configurar SAMBA4:
+	mv /etc/samba/smb.conf /etc/samba/smb.bkp
+	printf "
+# Global parameters
+[global]
+        allow dns updates = nonsecure and secure
+        bind interfaces only = Yes
+        dns forwarder = $DNSENCAMINHADO
+        interfaces = lo $INTERFACE0
+        netbios name = $NOME
+        realm = $REINO
+        server role = active directory domain controller
+        server signing = if_required
+        winbind enum groups = Yes
+        winbind enum users = Yes
+        winbind refresh tickets = Yes
+        winbind use default domain = Yes
+        workgroup = $SMBDOMINIO
+        idmap_ldb:use rfc2307 = yes
+        map acl inherit = Yes
+        store dos attributes = Yes
+        vfs objects = acl_xattr
+#		logon home = \\%L\%U\.profiles
+#		logon path = \\%L\profiles\%U
+#		hosts allow = 192.168.1. EXCEPT 192.168.1.20
+
+[netlogon]
+        path = /var/lib/samba/sysvol/thz.intra/scripts
+        read only = No
+
+[sysvol]
+        path = /var/lib/samba/sysvol
+        read only = No
+
+[profiles]
+		path = /var/profiles
+		writeable = Yes
+		browseable = No
+		create mask = 0600
+		directory mask = 0700
+
+[impressoras]
+		comment = Todas as Impressoras
+		path = /var/spool/samba
+		guest ok = yes
+		public = yes
+		printable = yes
+		browseable = yes
+		use client driver = yes
+
+[arquivos]
+		path = /home/arquivos
+		available = yes
+		writable = no
+
+[publico]
+		path = /home/samba_publico
+		available = yes
+		browseable = yes
+		writable = yes
+	" > smb.conf
 	systemctl unmask samba-ad-dc.service &>> $LOG
 	systemctl enable samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	systemctl restart samba-ad-dc.service smbd.service nmbd.service &>> $LOG
 	systemctl disable nmbd.service smbd.service winbind.service &>> $LOG
 	systemctl mask nmbd.service smbd.service winbind.service &>> $LOG
-	samba-tool user create $USUARIO P@ssword --rfc2307-from-nss
-	samba-tool user setpassword $USUARIO --newpassword==$SENHA
+	samba-tool user create $USUARIO P@ssword --login-shell=/bin/sh --uid-number="10000" --gid-number="10000" --nis-domain=$DOMINIO --unix-home=//smb01/profiles/$USUARIO
 	samba-tool group addmembers administrators "$USUARIO"
 	samba-tool user setexpiry $USUARIO --noexpiry &>> $LOG
 	samba-tool dns zonecreate $FQDN $ARPA -U Administrator --password=$SENHA &>> $LOG
