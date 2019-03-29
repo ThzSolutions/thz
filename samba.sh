@@ -119,6 +119,7 @@ options edns0
 
 #	Padronização:
 	bash base.sh
+	bash extra.sh
 
 #	Instalar python
 	apt -y -q install python-all-dev python-crypto python-dbg python-dev python-dnspython python3-dnspython python-gpg e python3-gpg python-markdown python3-markdown python3-dev &>> $LOG
