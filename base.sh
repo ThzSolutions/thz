@@ -129,14 +129,11 @@ restrict ::1
 restrict default kod notrap nomodify nopeer noquery
 restrict -6 default kod notrap nomodify nopeer noquery
 #	" > /etc/ntp.conf
-	sleep 1
-	timedatectl set-timezone "$ZONA"
-	sleep 1
-	ntpdate -dquv $SERVIDORNTP0
-	sleep 1
-	systemctl restart ntp.service
-	sleep 1
-	hwclock --systohc
+	timedatectl set-timezone "$ZONA" &>> $BASELOG
+	chown root:ntp /var/lib/samba/ntp_signd/
+	ntpdate -dquv $SERVIDORNTP0 &>> $BASELOG
+	systemctl restart ntp.service &>> $BASELOG
+	hwclock --systohc &>> $BASELOG
 	echo -e "[ \033[0;32m OK \033[0m ] Configuração NTP ..."
 	sleep 1
 exit 1
