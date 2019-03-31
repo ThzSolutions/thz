@@ -1,5 +1,7 @@
 #!/bin/bash
 #	Autor: Levi Barroso Menezes
+#	Data de criação: 31/03/2019
+#	Versão: 0.11
 
 source var.conf
 
