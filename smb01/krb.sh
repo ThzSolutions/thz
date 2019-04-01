@@ -1,7 +1,4 @@
 #!/bin/bash
-#	Autor: Levi Barroso Menezes
-
-source var.conf
 
 #	Instalar e configurar kerberos:
 mv /etc/krb5.conf /etc/krb5.conf.bkp

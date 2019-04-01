@@ -1,7 +1,4 @@
 #!/bin/bash
-#	Autor: Levi Barroso Menezes
-
-source var.conf
 
 #	Instalar dhcp:
 apt -y -q install isc-dhcp-server &>> $LOG

@@ -1,7 +1,4 @@
 #!/bin/bash
-#	Autor: Levi Barroso Menezes
-
-source var.conf
 
 #	Instalar NTP:
 apt -y -q install ntp ntpdate &>> $LOG

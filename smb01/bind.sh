@@ -1,7 +1,4 @@
 #!/bin/bash
-#	Autor: Levi Barroso Menezes
-
-source var.conf
 
 #	Instalar bind9
 apt -y -q install bind9utils &>> $LOG

@@ -1,7 +1,4 @@
 #!/bin/bash
-#	Autor: Levi Barroso Menezes
-
-source var.conf
 
 if [ "$USER" == "0" ]
 	then
@@ -35,7 +32,7 @@ fi
 #	Verificar conexão com a internet:
 ping -q -c1 -w1 br.archive.ubuntu.com > /dev/null
 #traceroute br.archive.ubuntu.com > /dev/null
-if [ $? -eq 0 ]
+if [ $? == 0 ]
 	then
 		echo -e "[ \033[0;32m OK \033[0m ] Internet ..."
 	else
