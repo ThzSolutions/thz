@@ -1,4 +1,5 @@
 #!/bin/bash
+. variaveis
 
 if [ "$USER" == "0" ]
 	then

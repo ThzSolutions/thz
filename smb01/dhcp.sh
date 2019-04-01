@@ -1,4 +1,5 @@
 #!/bin/bash
+. variaveis
 
 #	Instalar dhcp:
 apt -y -q install isc-dhcp-server &>> $LOG

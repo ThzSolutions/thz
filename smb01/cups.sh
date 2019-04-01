@@ -1,4 +1,5 @@
 #!/bin/bash
+. variaveis
 
 #	Instalar cups:
 apt -y -q install cups cups-driver-gutenprint cups-common cups-core-drivers &>> $LOG

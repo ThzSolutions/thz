@@ -1,4 +1,5 @@
 #!/bin/bash
+. variaveis
 
 #	Instalar bind9
 apt -y -q install bind9utils &>> $LOG
