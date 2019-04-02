@@ -1,5 +1,5 @@
 #!/bin/bash
-. variaveis
+. var
 
 #	Instalar NTP:
 apt -y -q install ntp ntpdate &>> $LOG

@@ -1,5 +1,5 @@
 #!/bin/bash
-. variaveis
+. var
 
 #	Instalar curl:	
 	apt -y -q install curl

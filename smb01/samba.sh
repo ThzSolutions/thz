@@ -1,5 +1,5 @@
 #!/bin/bash
-. variaveis
+. var
 
 #	Instalar winbind
 apt -y -q install winbind libnss-winbind libpam-winbind &>> $LOG

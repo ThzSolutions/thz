@@ -1,5 +1,5 @@
 #!/bin/bash
-. variaveis
+. var
 
 #	Configurar interfaces de rede (netplan):
 mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp

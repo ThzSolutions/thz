@@ -6,17 +6,17 @@
 #	Kernel Linux 4.15.x
 
 export DEBIAN_FRONTEND="noninteractive"
+. var
 
-. variaveis		# variaveis de construção
-. prep.sh		# verifica permições, atualiza e prepara repositorios
-. rede.sh		# configura a rede 
-. extra.sh		# instala programas de uso padrão
-. ntp.sh		# instala e configura o NTP
-. bind.sh		# instala e configura o BIND9 (DNS)
-. krb.sh		# instala e configura o KERBERUS
-. samba.sh		# instala e configura o SAMBA4 (AD-DC)
-. dhcp.sh		# instala e configura o ISC-DHCP
-. cups.sh		# instala e configura o CUPS (IMPRESSORAS)
+bash prep.sh		# verifica permições, atualiza e prepara repositorios
+bash rede.sh		# configura a rede 
+bash extra.sh		# instala programas de uso padrão
+bash ntp.sh			# instala e configura o NTP
+bash bind.sh		# instala e configura o BIND9 (DNS)
+bash krb.sh			# instala e configura o KERBERUS
+bash samba.sh		# instala e configura o SAMBA4 (AD-DC)
+bash dhcp.sh		# instala e configura o ISC-DHCP
+bash cups.sh		# instala e configura o CUPS (IMPRESSORAS)
 
 #	Finalizar
 HORAFINAL=$(date +%T)

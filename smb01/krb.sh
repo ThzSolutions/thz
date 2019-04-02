@@ -1,5 +1,5 @@
 #!/bin/bash
-. variaveis
+. var
 
 #	Instalar e configurar kerberos:
 mv /etc/krb5.conf /etc/krb5.conf.bkp

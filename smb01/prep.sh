@@ -1,5 +1,5 @@
 #!/bin/bash
-. variaveis
+. var
 
 if [ "$USER" == "0" ]
 	then

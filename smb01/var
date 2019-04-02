@@ -1,0 +1,56 @@
+#	Script:
+	USER=`id -u`
+	UBUNTU=`lsb_release -rs`
+	KERNEL=`uname -r | cut -d'.' -f1,2`
+	BASELOG="/var/log/base.sh"
+	HORAINICIAL=`date +%T`
+	LOG="/var/log/ad-dc.sh.log"	
+
+#	Servidor:
+	NOME=`hostname`
+	DOMINIO="thz.intra"
+	FQDN="$NOME.$DOMINIO"
+
+#	Rede
+	INTERFACE0="enp0s3"
+	DHCP0v4="false"
+	IP0v4="172.20.0.10"
+	MASCARA0v4="/16"
+	GATEWAY0v4="172.20.0.1"
+	DHCP0v6="true"
+	INTERFACE1="enp0s8"
+	DHCP1v4="false"
+	IP1v4="10.0.0.20"
+	MASCARA1v4="/8"
+	GATEWAY1v4="10.10.0.1"
+	DHCP1v6="true"
+	DNSEX0="8.8.8.8"
+	DNSEX1="4.4.8.8"
+	DNSEX2="208.67.222.222"
+	DNSEX3="208.67.222.220"
+	
+#	NTP
+	SERVIDORNTP0="a.ntp.br"
+	SERVIDORNTP1="b.ntp.br"
+	SERVIDORNTP2="c.ntp.br"
+	ZONA="America/Fortaleza"
+	
+#	Samba
+	USUARIO="administrador"
+	SENHA="P@ssword"
+	REINO="THZ.INTRA"
+	DNSBE="BIND9_DLZ"
+	REGRA="dc"
+	LEVEL="2008_R2"
+	SMBDOMINIO="THZ"
+	DNSENCAMINHADO="8.8.8.8"
+
+#	DNS
+	ARPA="20.172.in-addr.arpa"
+	ARPAIP="10.0"
+	ZONANOME='"smb01"'
+	ZONADOMINIO='"thz.intra"'
+	ZONAFQDN='"$NOME.$DOMINIO"'
+	ZONADIRFILE='"etc/bind/db.thz.intra"'
+	ZONAREVFILE='"etc/bind/db.20.172.in-addr.arpa"'
+	ZONAARPA='"20.172.in-addr.arpa"'
