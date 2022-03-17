@@ -10,7 +10,7 @@ apt -y -q install acl attr quota cifs-utils dnsutils &>> $LOG
 echo -e "[ \033[0;32m OK \033[0m ] Recursos usados pelo samba ..."
 
 #	Instalar samba4:
-apt -y -q install samba smbclient samba-testsuite &>> $LOG
+apt -y -q install samba samba-doc samba-common smbclient samba-vfs-modules samba-dbg samba-dsdb-modules samba-testsuite &>> $LOG
 echo -e "[ \033[0;32m OK \033[0m ] Samba4 ..."
 
 #	Provisionar controlador de domínio do active directory:
