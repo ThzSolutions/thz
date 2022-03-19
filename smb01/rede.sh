@@ -2,7 +2,7 @@
 . var
 
 #	Configurar interfaces de rede (netplan):
-mv /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bkp
+rm -r /etc/netplan/*
 printf "network:
     version: 2
     renderer: networkd
@@ -22,7 +22,7 @@ printf "network:
             gateway4: $GATEWAY1v4
             nameservers:
                 addresses: [$IP1v4, $DNSEX0, $DNSEX1]
-                search: [$DOMINIO]" > /etc/netplan/01-netcfg.yaml
+                search: [$DOMINIO]" > /etc/netplan/00-netcfg.yaml
 netplan --debug apply &>> $LOG
 echo -e "[ \033[0;32m OK \033[0m ] Configurações de rede ..."
 
@@ -48,6 +48,7 @@ echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome interna ..."
 #	Auterar resolução de nomes externa (resolv.conf):
 printf "nameserver $IP0v4
 nameserver $DNSEX0
+nameserver $DNSEX1
 search $DOMINIO
 domain $DOMINIO" > /etc/resolv.conf
 echo -e "[ \033[0;32m OK \033[0m ] Resolução de nome externa ..."
