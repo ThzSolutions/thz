@@ -23,9 +23,9 @@ fi
 #	Verificar versão do kernel:
 if [ "$KERNEL" == "4.15" ]
 	then
-		echo -e "[ \033[0;32m OK \033[0m ] Kernel compatível ..."
+		echo -e "[ \033[0;32m OK \033[0m ] Kernel homologado ..."
 	else
-		echo -e "[ \033[0;31m ER \033[0m ] Kernel incompativel (Linux 4.15 ou superior) ..."
+		echo -e "[ \033[0;31m ER \033[0m ] Kernel não homologado (Linux 4.15) ..."
 		echo -e "\033[0;33m Pressione <ENTER> se quiser continuar ou <CTRL> + C para sair.\033[0m"
 		read
 fi
