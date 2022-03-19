@@ -39,7 +39,7 @@ echo -e "[ \033[0;32m OK \033[0m ] Configuração local do bind9 ..."
 printf ";
 $TTL    604800
 @       	IN      SOA     $FQDN.				root.$DOMINIO.	 (
-							2					; Serial
+							2			; Serial
 							604800        		; Refresh
 							86400         		; Retry
 							2419200         	; Expire
@@ -55,7 +55,7 @@ echo -e "[ \033[0;32m OK \033[0m ] Zona direta do dominio ..."
 printf ";
 $TTL    604800
 @       	IN      SOA     $FQDN.				root.$DOMINIO.	 (
-							1809201402			; Serial
+							1809201402		; Serial
 							604800        		; Refresh
 							86400         		; Retry
 							2419200         	; Expire
@@ -63,7 +63,7 @@ $TTL    604800
 ;
 @       	IN      NS      $NOME.
 $ARPAIP    	IN      PTR		$DOMINIO.
-$ARPAIP    	IN      PTR		$FQDN." > etc/bind/db.20.172.in-addr.arpa
+$ARPAIP    	IN      PTR		$FQDN." > etc/bind/db.30.172.in-addr.arpa
 systemctl restart bind9.service
 echo -e "[ \033[0;32m OK \033[0m ] Zona reversa do dominio ..."
 	
