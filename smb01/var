@@ -7,7 +7,7 @@
 	LOG="/var/log/ad-dc.sh.log"	
 
 #	Servidor:
-	NOME=`hostname`
+	NOME=`addc-00`
 	DOMINIO="thz.intra"
 	FQDN="$NOME.$DOMINIO"
 
@@ -18,12 +18,6 @@
 	MASCARA0v4="/16"
 	GATEWAY0v4="172.20.0.1"
 	DHCP0v6="true"
-	INTERFACE1="enp0s8"
-	DHCP1v4="false"
-	IP1v4="10.0.0.20"
-	MASCARA1v4="/8"
-	GATEWAY1v4="10.10.0.1"
-	DHCP1v6="true"
 	DNSEX0="8.8.8.8"
 	DNSEX1="4.4.8.8"
 	DNSEX2="208.67.222.222"
