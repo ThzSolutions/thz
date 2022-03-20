@@ -2,7 +2,7 @@
 . var
 
 #	Instalar bind9
-apt -y -q install bind9utils &>> $LOG
+apt -y -q install bind9 bind9utils &>> $LOG
 echo -e "[ \033[0;32m OK \033[0m ] Bind9 ..."
 
 #	Configurar opções do bind9
