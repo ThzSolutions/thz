@@ -1,0 +1,57 @@
+#!/bin/bash
+
+#	Autor: Levi Barroso Menezes
+#	Data de criação: 20/03/2022
+#	Versão: 0.12
+#	Samba4
+
+#	Script:
+	USER='id -u' 
+	UBUNTU='lsb_release -rs' 
+	KERNEL='uname -r | corte -d'.' -f1,2' 
+	BASELOG="/var/log/base.sh"
+	HORAINICIAL='data +%T' 
+	LOG="/var/log/addc.sh.log"	
+
+#	Servidor: 
+	NOME='addc-00' 
+	DOMINIO="thz.intra"
+	FQDN="$NOME.$DOMINIO"
+
+#	Rede:
+	INTERFACE0="enp0s3"
+	DHCP0v4="false" 
+	IP0v4="172.20.0.10"
+	RÍMEL0v4="/16" 
+	GATEWAY0v4="172.20.0.1"
+	DHCP0v6="true" 
+	DNSEX0="8.8.8.8"
+	DNSEX1="4.4.8.8"
+	DNSEX2="208.67.222.222"
+	DNSEX3="208.67.222.220"
+	
+#	NTP:
+	SERVIDORNTP0=$GATEWAY0v4
+	SERVIDORNTP1="a.ntp.br"
+	SERVIDORNTP2="b.ntp.br"
+	ZONA="América/Fortaleza" 
+	
+#	Samba:
+	USUARIO="Supremo"
+	SENHA="P@ssword"
+	REINO="THZ.INTRA" 
+	DNSBE="SAMBA_INTERNAL"
+	REGRA="dc"
+	LEVEL="2008_R2"
+	SMBDOMINIO="THZ"
+	DNSENCAMINHADO="8.8.8.8"
+
+#	DNS:
+	ARPA="20.172.in-addr.arpa"
+	ARPAIP="4.0"
+	ZONANOME='smb01' 
+	ZONADOMINIO='thz.intra'
+	ZONAFQDN='"$NOME.$DOMINIO"'
+	ZONADIRFILE='"/etc/bind/db.thz.intra"'
+	ZONAREVFILE='"/etc/bind/db.20.172.in-addr.arpa"'
+	ZONAARPA='"20.172.in-addr.arpa"'
